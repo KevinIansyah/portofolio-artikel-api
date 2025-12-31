@@ -17,7 +17,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ApiResponse::error('Email atau password salah', 401);
+            return ApiResponse::error(__('messages.auth.invalid_credentials'), 401);
         }
 
         $user->tokens()->delete();
@@ -32,14 +32,14 @@ class AuthController extends Controller
 
         $message = 'Login berhasil';
 
-        return ApiResponse::success($data, $message);
+        return ApiResponse::success($data, __('messages.auth.login_success'), 200);
     }
 
     public function me(Request $request)
     {
         $user = $request->user();
 
-        return ApiResponse::success($user, 'Data user berhasil diambil');
+        return ApiResponse::success($user, __('messages.auth.me_success'), 200);
     }
 
     public function register(RegisterRequest $request)
@@ -59,18 +59,20 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ];
 
-        $message = 'Registrasi berhasil';
-
-        return ApiResponse::success($data, $message, 201);
+        return ApiResponse::success($data, __('messages.auth.register_success'), 201);
     }
 
     public function logout(Request $request)
     {
-        // Logout logic will go here
+        $request->user()->currentAccessToken()->delete();
+
+        return ApiResponse::success(null, __('messages.auth.logout_success'), 200);
     }
 
     public function logutAllDevices(Request $request)
     {
-        // Logout from all devices logic will go here
+        $request->user()->tokens()->delete();
+
+        return ApiResponse::success(null, __('messages.auth.logout_all_devices_success'), 200);
     }
 }

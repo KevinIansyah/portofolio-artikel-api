@@ -25,13 +25,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'locale' => \App\Http\Middleware\SetLocale::class,
         ]);
 
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
+            \App\Http\Middleware\SetLocale::class,
         ]);
 
-        // Throttle API requests
         $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -45,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return ApiResponse::unauthorized('Anda belum terautentikasi');
+            return ApiResponse::unauthorized(__('messages.auth.unauthorized'));
         });
 
         /**
@@ -57,7 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return ApiResponse::forbidden($e->getMessage() ?: 'Akses ditolak');
+            return ApiResponse::forbidden($e->getMessage() ?: __('messages.auth.forbidden'));
         });
 
         /**
@@ -72,15 +73,14 @@ return Application::configure(basePath: dirname(__DIR__))
             $model = class_basename($e->getModel());
 
             $messages = [
-                'Project'  => 'Project tidak ditemukan',
-                'Article'  => 'Artikel tidak ditemukan',
-                'Category' => 'Kategori tidak ditemukan',
+                'Project'  => __('messages.projects.not_found'),
+                'Article'  => __('messages.articles.not_found'),
+                'Category' => __('messages.categories.not_found'),
                 'User'     => 'User tidak ditemukan',
-                'Recipe'   => 'Resep tidak ditemukan',
             ];
 
             return ApiResponse::notFound(
-                $messages[$model] ?? 'Data tidak ditemukan'
+                $messages[$model] ?? __('messages.general.not_found')
             );
         });
 
@@ -95,23 +95,23 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $previous = $e->getPrevious();
 
+            // Check if it's a model not found from route binding
             if ($previous instanceof ModelNotFoundException) {
                 $model = class_basename($previous->getModel());
 
                 $messages = [
-                    'Project'  => 'Project tidak ditemukan',
-                    'Article'  => 'Artikel tidak ditemukan',
-                    'Category' => 'Kategori tidak ditemukan',
+                    'Project'  => __('messages.projects.not_found'),
+                    'Article'  => __('messages.articles.not_found'),
+                    'Category' => __('messages.categories.not_found'),
                     'User'     => 'User tidak ditemukan',
-                    'Recipe'   => 'Resep tidak ditemukan',
                 ];
 
                 return ApiResponse::notFound(
-                    $messages[$model] ?? 'Data tidak ditemukan'
+                    $messages[$model] ?? __('messages.general.not_found')
                 );
             }
 
-            return ApiResponse::notFound('Endpoint tidak ditemukan');
+            return ApiResponse::notFound(__('messages.general.endpoint_not_found'));
         });
 
         /**
@@ -124,7 +124,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return ApiResponse::error(
-                'Metode HTTP tidak diizinkan',
+                __('messages.general.method_not_allowed'),
                 405
             );
         });
@@ -140,7 +140,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponse::validationError(
                 $e->errors(),
-                'Validasi gagal'
+                __('messages.general.validation_error')
             );
         });
 
@@ -154,7 +154,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return ApiResponse::error(
-                'Terlalu banyak permintaan. Silakan coba lagi nanti.',
+                __('messages.general.too_many_requests'),
                 429,
                 [
                     'retry_after' => $e->getHeaders()['Retry-After'] ?? null,
@@ -174,7 +174,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // Duplicate entry error
             if ($e->getCode() === '23000') {
                 return ApiResponse::error(
-                    'Data sudah ada dalam database',
+                    __('messages.general.duplicate_entry'),
                     409
                 );
             }
@@ -182,13 +182,13 @@ return Application::configure(basePath: dirname(__DIR__))
             // Foreign key constraint
             if (str_contains($e->getMessage(), 'foreign key constraint')) {
                 return ApiResponse::error(
-                    'Tidak dapat menghapus data karena masih digunakan',
+                    __('messages.general.relation_constraint'),
                     409
                 );
             }
 
             return ApiResponse::error(
-                'Terjadi kesalahan pada database',
+                __('messages.general.server_error'),
                 500
             );
         });
@@ -203,7 +203,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $statusCode = $e->getStatusCode();
-            $message = $e->getMessage() ?: 'Terjadi kesalahan';
+            $message = $e->getMessage() ?: __('messages.general.error');
 
             return ApiResponse::error($message, $statusCode);
         });
@@ -218,7 +218,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            // For Development: Log the exception details
+            // Log the error for debugging
             Log::error('Unhandled exception', [
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
@@ -227,7 +227,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
 
             return ApiResponse::error(
-                'Terjadi kesalahan pada server',
+                __('messages.general.server_error'),
                 500
             );
         });

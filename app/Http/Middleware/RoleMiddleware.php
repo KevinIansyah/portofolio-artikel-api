@@ -18,13 +18,14 @@ class RoleMiddleware
     {
         // Check if user is authenticated
         if (! $request->user()) {
-            throw new AuthorizationException('Anda belum terautentikasi', 401);
+            throw new AuthorizationException(__('messages.auth.unauthorized'));
         }
 
         // Check if user has required role
         if (! in_array($request->user()->role, $roles)) {
-            throw new AuthorizationException('Anda tidak memiliki akses ke resource ini', 403);
+            throw new AuthorizationException(__('messages.auth.forbidden'));
         }
+        
         return $next($request);
     }
 }

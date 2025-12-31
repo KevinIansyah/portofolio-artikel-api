@@ -21,14 +21,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/profile', [ProfileController::class, 'update']);
     });
 
+    Route::middleware('role:admin,author')->group(function () {
+        Route::post('/articles', [ArticleController::class, 'store']);
+        Route::put('/articles/{article}', [ArticleController::class, 'update']);
+        Route::delete('/articles/{article}', [ArticleController::class, 'destroy']);
+        Route::get('/articles/{article}/translations', [ArticleController::class, 'translations']);
+    });
+
     Route::middleware('role:admin')->group(function () {
         Route::post('/projects', [ProjectController::class, 'store']);
         Route::put('/projects/{project}', [ProjectController::class, 'update']);
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-
-        Route::post('/articles', [ArticleController::class, 'store']);
-        Route::put('/articles/{article}', [ArticleController::class, 'update']);
-        Route::delete('/articles/{article}', [ArticleController::class, 'destroy']);
 
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::put('/categories/{category}', [CategoryController::class, 'update']);

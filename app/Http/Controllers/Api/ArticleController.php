@@ -12,12 +12,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Article::where('status', 'published')->with(['categories:id,name']);
+        $locale = app()->getLocale();
+
+        $query = Article::where('status', 'published')
+            ->byLocale($locale)
+            ->with(['categories:id,name']);
 
         if ($request->has('category')) {
             $query->whereHas('categories', function ($q) use ($request) {
@@ -25,35 +32,28 @@ class ArticleController extends Controller
             });
         }
 
-        // if ($request->has('tag')) {
-        //     $query->whereHas('tags', function ($q) use ($request) {
-        //         $q->where('slug', $request->tag);
-        //     });
+        // if ($request->has('search')) {
+        //     $query->search($request->search);
         // }
-
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
 
         $articles = $query->latest('published_at')
             ->paginate($request->get('per_page', 12));
 
-        return ApiResponse::paginated($articles, 'Daftar artikel berhasil diambil');
+        return ApiResponse::paginated($articles, __('messages.articles.list_success'));
     }
 
     public function show($slug)
     {
-        $article = Article::where('slug', $slug)
+        $locale = app()->getLocale();
+
+        $article = Article::where("slug_{$locale}", $slug)
             ->where('status', 'published')
             ->with(['categories:id,name,slug', 'user:id,name,email,avatar'])
             ->firstOrFail();
 
-        return ApiResponse::success($article, 'Detail artikel berhasil diambil');
+        $article->increment('views');
+
+        return ApiResponse::success($article, __('messages.articles.detail_success'));
     }
 
     public function store(StoreRequest $request)
@@ -67,8 +67,12 @@ class ArticleController extends Controller
             if ($request->hasFile('thumbnail')) {
                 $data['thumbnail_url'] = $this->uploadThumbnail(
                     $request->file('thumbnail'),
-                    $request->title
+                    $request->title_id
                 );
+            }
+
+            if ($data['status'] === 'published') {
+                $data['published_at'] = now();
             }
 
             $article = Article::create($data);
@@ -77,24 +81,20 @@ class ArticleController extends Controller
                 $article->categories()->sync($request->categories);
             }
 
-            // if ($request->has('tags')) {
-            //     $article->tags()->sync($request->tags);
-            // }
-
             DB::commit();
 
             $article->load(['categories:id,name', 'user:id,name']);
 
-            return ApiResponse::success($article, 'Artikel berhasil disimpan');
+            return ApiResponse::success($article, __('messages.articles.store_success'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
             Log::error('Failed to store article: ' . $e->getMessage(), [
                 'user_id' => $request->user()->id,
-                'title' => $request->title,
+                'title_id' => $request->title_id ?? null,
             ]);
 
-            return ApiResponse::error('Gagal menyimpan artikel', 500);
+            return ApiResponse::error(__('messages.articles.store_failed'), 500);
         }
     }
 
@@ -112,8 +112,12 @@ class ArticleController extends Controller
 
                 $data['thumbnail_url'] = $this->uploadThumbnail(
                     $request->file('thumbnail'),
-                    $request->title
+                    $request->title_id ?? $article->title_id
                 );
+            }
+
+            if ($data['status'] === 'published' && $article->published_at === null) {
+                $data['published_at'] = now();
             }
 
             $article->update($data);
@@ -122,15 +126,11 @@ class ArticleController extends Controller
                 $article->categories()->sync($request->categories);
             }
 
-            // if ($request->has('tags')) {
-            //     $article->tags()->sync($request->tags);
-            // }
-
             DB::commit();
 
             $article->load(['categories:id,name', 'user:id,name']);
 
-            return ApiResponse::success($article, 'Artikel berhasil diperbarui');
+            return ApiResponse::success($article, __('messages.articles.update_success'));
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -139,7 +139,7 @@ class ArticleController extends Controller
                 'article_id' => $article->id,
             ]);
 
-            return ApiResponse::error('Gagal memperbarui artikel', 500);
+            return ApiResponse::error(__('messages.articles.update_failed'), 500);
         }
     }
 
@@ -153,13 +153,11 @@ class ArticleController extends Controller
             }
 
             $article->categories()->detach();
-            // $article->tags()->detach();
-
             $article->delete();
 
             DB::commit();
 
-            return ApiResponse::success(null, 'Artikel berhasil dihapus');
+            return ApiResponse::success(null, __('messages.articles.delete_success'));
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -168,16 +166,58 @@ class ArticleController extends Controller
                 'article_id' => $article->id,
             ]);
 
-            return ApiResponse::error('Gagal menghapus artikel', 500);
+            return ApiResponse::error(__('messages.articles.delete_failed'), 500);
         }
+    }
+
+    public function translations(Article $article)
+    {
+        return ApiResponse::success([
+            'id' => $article->id,
+            'user_id' => $article->user_id,
+            'thumbnail_url' => $article->thumbnail_url,
+            'status' => $article->status,
+            'views' => $article->views,
+            'reading_time' => $article->reading_time,
+            'published_at' => $article->published_at,
+            'translations' => [
+                'id' => [
+                    'title' => $article->title_id,
+                    'slug' => $article->slug_id,
+                    'description' => $article->description_id,
+                    'content' => $article->content_id,
+                ],
+                'en' => [
+                    'title' => $article->title_en,
+                    'slug' => $article->slug_en,
+                    'description' => $article->description_en,
+                    'content' => $article->content_en,
+                ],
+            ],
+            'categories' => $article->categories,
+            'created_at' => $article->created_at,
+            'updated_at' => $article->updated_at,
+        ], __('messages.articles.translations_success'));
     }
 
     private function uploadThumbnail($file, $title): string
     {
-        $filename = time() . '_' . Str::slug($title) . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('articles', $filename, 'public');
+        $filename = time() . '_' . Str::slug($title) . '.webp';
+        $path = 'articles/' . $filename;
 
-        return asset('storage/' . $path);
+        $manager = new ImageManager(new Driver());
+
+        $image = $manager
+            ->read($file)
+            ->resize(1200, null)
+            ->toWebp(85);
+
+        Storage::disk('public')->put($path, (string) $image);
+
+        OptimizerChainFactory::create()
+            ->optimize(storage_path('app/public/' . $path));
+
+        return Storage::url($path);
     }
 
     private function deleteThumbnail($url): void

@@ -15,8 +15,8 @@ class ApiRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'status' => 'error',
-                'message' => 'Akses ditolak',
+                'success' => false,
+                'message' => __('messages.auth.unauthorized'),
             ], 403)
         );
     }
@@ -28,8 +28,8 @@ class ApiRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'status' => 'error',
-                'message' => 'Validasi gagal',
+                'success' => false,
+                'message' => __('messages.general.validation_error'),
                 'errors' => $validator->errors(),
             ], 422)
         );

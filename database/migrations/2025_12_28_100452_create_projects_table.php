@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->string('slug')->unique();
-            $table->text('description');
-            $table->text('content');
+            $table->string('title_id');
+            $table->string('slug_id')->unique();
+            $table->text('description_id');
+            $table->text('content_id');
+            $table->string('title_en');
+            $table->string('slug_en')->unique();
+            $table->text('description_en');
+            $table->text('content_en');
             $table->string('thumbnail_url')->nullable();
             $table->string('demo_url')->nullable();
             $table->string('project_url')->nullable();
