@@ -14,18 +14,30 @@ class CategoryController extends Controller
 {
     public function projectCategories()
     {
+        $locale = app()->getLocale();
+        $name = 'name_' . $locale;
+        $slug = 'slug_' . $locale;
 
-        $categories = Category::select('id', 'name', 'slug')->where('type', 'project')->withCount('projects')->orderBy('name')->get();
+        $categories = Category::select('id', $name, $slug)
+            ->byLocale($locale)
+            ->where('type', 'project')
+            ->orderBy($name)->get();
 
-        return ApiResponse::success($categories, 'Daftar kategori project berhasil diambil');
+        return ApiResponse::success($categories, __('messages.categories.list_success'));
     }
 
     public function articleCategories()
     {
+        $locale = app()->getLocale();
+        $name = 'name_' . $locale;
+        $slug = 'slug_' . $locale;
 
-        $categories = Category::select('id', 'name', 'slug')->where('type', 'article')->withCount('articles')->orderBy('name')->get();
+        $categories = Category::select('id', $name, $slug)
+            ->byLocale($locale)
+            ->where('type', 'article')
+            ->orderBy($name)->get();
 
-        return ApiResponse::success($categories, 'Daftar kategori artikel berhasil diambil');
+        return ApiResponse::success($categories, __('messages.categories.list_success'));
     }
 
     public function store(StoreRequest $request)
@@ -33,14 +45,14 @@ class CategoryController extends Controller
         try {
             $category = Category::create($request->validated());
 
-            return ApiResponse::success($category, 'Kategori berhasil dibuat', 201);
+            return ApiResponse::success($category, __('messages.categories.store_success'), 201);
         } catch (\Exception $e) {
             Log::error('Failed to create category: ' . $e->getMessage(), [
                 'name' => $request->name,
                 'type' => $request->type,
             ]);
 
-            return ApiResponse::error('Gagal membuat kategori', 500);
+            return ApiResponse::error(__('messages.categories.store_failed'), 500);
         }
     }
 
@@ -49,7 +61,7 @@ class CategoryController extends Controller
         try {
             $category->update($request->validated());
 
-            return ApiResponse::success($category, 'Kategori berhasil diperbarui');
+            return ApiResponse::success($category, __('messages.categories.update_success'));
         } catch (\Exception $e) {
             Log::error('Failed to update category: ' . $e->getMessage(), [
                 'id' => $category->id,
@@ -57,7 +69,7 @@ class CategoryController extends Controller
                 'type' => $request->type,
             ]);
 
-            return ApiResponse::error('Gagal memperbarui kategori', 500);
+            return ApiResponse::error(__('messages.categories.update_failed'), 500);
         }
     }
 
@@ -69,14 +81,14 @@ class CategoryController extends Controller
 
             if ($projectsCount > 0 || $articlesCount > 0) {
                 return ApiResponse::error(
-                    "Kategori tidak dapat dihapus karena masih digunakan oleh {$projectsCount} project dan {$articlesCount} artikel",
+                    __('messages.general.relation_constraint'),
                     400
                 );
             }
 
             $category->delete();
 
-            return ApiResponse::success(null, 'Kategori berhasil dihapus');
+            return ApiResponse::success(null, __('messages.categories.delete_success'));
         } catch (\Exception $e) {
             Log::error('Failed to delete category: ' . $e->getMessage(), [
                 'id' => $category->id,
@@ -84,7 +96,25 @@ class CategoryController extends Controller
                 'type' => $category->type,
             ]);
 
-            return ApiResponse::error('Gagal menghapus kategori', 500);
+            return ApiResponse::error(__('messages.categories.delete_failed'), 500);
         }
+    }
+
+    public function translations(Category $category)
+    {
+        return ApiResponse::success([
+            'id' => $category->id,
+            'type' => $category->type,
+            'translations' => [
+                'id' => [
+                    'name' => $category->name_id,
+                ],
+                'en' => [
+                    'name' => $category->name_en,
+                ],
+            ],
+            'created_at' => $category->created_at,
+            'updated_at' => $category->updated_at,
+        ], __('messages.categories.translations_success'));
     }
 }

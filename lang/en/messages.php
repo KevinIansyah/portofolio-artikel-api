@@ -15,16 +15,6 @@ return [
     'not_found' => 'Article not found',
   ],
 
-  // Categories
-  'categories' => [
-    'list_success' => 'Categories retrieved successfully',
-    'detail_success' => 'Category detail retrieved successfully',
-    'store_success' => 'Category created successfully',
-    'update_success' => 'Category updated successfully',
-    'delete_success' => 'Category deleted successfully',
-    'not_found' => 'Category not found',
-  ],
-
   // Projects
   'projects' => [
     'list_success' => 'Projects retrieved successfully',
@@ -37,6 +27,34 @@ return [
     'delete_failed' => 'Failed to delete project',
     'translations_success' => 'All project translations retrieved successfully',
     'not_found' => 'Project not found',
+  ],
+
+  // Categories
+  'categories' => [
+    'list_success' => 'Categories retrieved successfully',
+    'detail_success' => 'Category detail retrieved successfully',
+    'store_success' => 'Category created successfully',
+    'update_success' => 'Category updated successfully',
+    'delete_success' => 'Category deleted successfully',
+    'store_failed' => 'Failed to create category',
+    'update_failed' => 'Failed to update category',
+    'delete_failed' => 'Failed to delete category',
+    'translations_success' => 'All category translations retrieved successfully',
+    'not_found' => 'Category not found',
+  ],
+
+  // Tags
+  'tags' => [
+    'list_success' => 'Tags retrieved successfully',
+    'detail_success' => 'Tag detail retrieved successfully',
+    'store_success' => 'Tag created successfully',
+    'update_success' => 'Tag updated successfully',
+    'delete_success' => 'Tag deleted successfully',
+    'store_failed' => 'Failed to create tag',
+    'update_failed' => 'Failed to update tag',
+    'delete_failed' => 'Failed to delete tag',
+    'translations_success' => 'All tag translations retrieved successfully',
+    'not_found' => 'Tag not found',
   ],
 
   // Auth
@@ -57,7 +75,7 @@ return [
     'error' => 'An error occurred',
     'validation_error' => 'Validation failed',
     'not_found' => 'Data not found',
-    'endpoint_not_found' => 'API endpoint not found',
+    'endpoint_not_found' => 'API endpoint not found 1111',
     'method_not_allowed' => 'Method not allowed',
     'too_many_requests' => 'Too many requests',
     'duplicate_entry' => 'Data already exists in the database',

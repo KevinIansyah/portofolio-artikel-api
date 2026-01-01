@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\HasUniqueSlugName;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Tag extends Model
 {
     use HasUniqueSlugName;
 
@@ -14,23 +14,25 @@ class Category extends Model
         'slug_id',
         'name_en',
         'slug_en',
+        'description',
         'type',
     ];
 
     protected $appends = [
         'name',
-        'slug',
+        'slug'
     ];
 
     protected $hidden = [
+        'pivot',
         'name_id',
-        'name_en',
         'slug_id',
+        'name_en',
         'slug_en',
         'type',
         'created_at',
         'updated_at',
-        'pivot',
+        'pivot'
     ];
 
     /**
@@ -52,16 +54,16 @@ class Category extends Model
     }
 
     /**
-     * Relationships
+     * Relationship
      */
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'category_project');
+        return $this->belongsToMany(Project::class, 'tag_project');
     }
 
     public function articles()
     {
-        return $this->belongsToMany(Article::class, 'category_article');
+        return $this->belongsToMany(Article::class, 'tag_article');
     }
 
     /**
@@ -85,7 +87,6 @@ class Category extends Model
     public function scopeByLocale($query, $locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-
         return $query->whereNotNull("name_{$locale}");
     }
 }

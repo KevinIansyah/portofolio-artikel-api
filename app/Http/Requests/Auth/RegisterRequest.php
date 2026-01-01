@@ -28,7 +28,24 @@ class RegisterRequest extends ApiRequest
         ];
     }
 
+    /**
+     * Get custom validation messages
+     */
     public function messages(): array
+    {
+        $locale = app()->getLocale();
+
+        if ($locale === 'en') {
+            return $this->englishMessages();
+        }
+
+        return $this->indonesianMessages();
+    }
+
+    /**
+     * Indonesian validation messages
+     */
+    private function indonesianMessages(): array
     {
         return [
             'name.required' => 'Nama wajib diisi.',
@@ -45,6 +62,30 @@ class RegisterRequest extends ApiRequest
             'password.string' => 'Kata sandi tidak valid.',
             'password.min' => 'Kata sandi minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak sesuai.',
+        ];
+    }
+
+    /**
+     * English validation messages
+     */
+    private function englishMessages(): array
+    {
+        return [
+            'name.required' => 'Name is required.',
+            'name.string'   => 'Name must be a valid string.',
+            'name.max'      => 'Name may not be greater than 255 characters.',
+
+            'email.required' => 'Email is required.',
+            'email.string'   => 'Email must be a valid string.',
+            'email.email'    => 'Email format is invalid.',
+            'email.max'      => 'Email may not be greater than 255 characters.',
+            'email.unique'   => 'Email has already been taken.',
+
+            'password.required'   => 'Password is required.',
+            'password.string'     => 'Password must be a valid string.',
+            'password.min'        => 'Password must be at least 8 characters.',
+            'password.confirmed'  => 'Password confirmation does not match.',
+
         ];
     }
 }

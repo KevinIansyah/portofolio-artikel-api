@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\Settings\PasswordController;
 use App\Http\Controllers\Api\Settings\ProfileController;
+use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -32,10 +33,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/projects', [ProjectController::class, 'store']);
         Route::put('/projects/{project}', [ProjectController::class, 'update']);
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+        Route::get('/projects/{project}/translations', [ProjectController::class, 'translations']);
 
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::put('/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+        Route::get('/categories/{category}/translations', [CategoryController::class, 'translations']);
+
+        Route::post('/tags', [TagController::class, 'store']);
+        Route::put('/tags/{tag}', [TagController::class, 'update']);
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
+        Route::get('/tags/{tag}/translations', [TagController::class, 'translations']);
     });
 });
 
@@ -47,3 +55,6 @@ Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 
 Route::get('/categories/projects', [CategoryController::class, 'projectCategories']);
 Route::get('/categories/articles', [CategoryController::class, 'articleCategories']);
+
+Route::get('/tags/projects', [TagController::class, 'projectTags']);
+Route::get('/tags/articles', [TagController::class, 'articleTags']);

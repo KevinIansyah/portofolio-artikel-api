@@ -57,30 +57,30 @@ class StoreRequest extends FormRequest
     {
         return [
             // Indonesian fields
-            'title_id.required' => 'Judul artikel (Indonesia) wajib diisi.',
-            'title_id.string' => 'Judul artikel (Indonesia) harus berupa teks.',
-            'title_id.max' => 'Judul artikel (Indonesia) maksimal 255 karakter.',
+            'title_id.required' => 'Judul artikel (ID) wajib diisi.',
+            'title_id.string' => 'Judul artikel (ID) harus berupa teks.',
+            'title_id.max' => 'Judul artikel (ID) maksimal 255 karakter.',
 
-            'slug_id.unique' => 'Slug (Indonesia) sudah digunakan.',
+            'slug_id.unique' => 'Slug (ID) sudah digunakan.',
 
-            'description_id.required' => 'Deskripsi artikel (Indonesia) wajib diisi.',
-            'description_id.string' => 'Deskripsi artikel (Indonesia) harus berupa teks.',
+            'description_id.required' => 'Deskripsi artikel (ID) wajib diisi.',
+            'description_id.string' => 'Deskripsi artikel (ID) harus berupa teks.',
 
-            'content_id.required' => 'Konten artikel (Indonesia) wajib diisi.',
-            'content_id.string' => 'Konten artikel (Indonesia) harus berupa teks.',
+            'content_id.required' => 'Konten artikel (ID) wajib diisi.',
+            'content_id.string' => 'Konten artikel (ID) harus berupa teks.',
 
             // English fields
-            'title_en.required' => 'Judul artikel (English) wajib diisi.',
-            'title_en.string' => 'Judul artikel (English) harus berupa teks.',
-            'title_en.max' => 'Judul artikel (English) maksimal 255 karakter.',
+            'title_en.required' => 'Judul artikel (EN) wajib diisi.',
+            'title_en.string' => 'Judul artikel (EN) harus berupa teks.',
+            'title_en.max' => 'Judul artikel (EN) maksimal 255 karakter.',
 
-            'slug_en.unique' => 'Slug (English) sudah digunakan.',
+            'slug_en.unique' => 'Slug (EN) sudah digunakan.',
 
-            'description_en.required' => 'Deskripsi artikel (English) wajib diisi.',
-            'description_en.string' => 'Deskripsi artikel (English) harus berupa teks.',
+            'description_en.required' => 'Deskripsi artikel (EN) wajib diisi.',
+            'description_en.string' => 'Deskripsi artikel (EN) harus berupa teks.',
 
-            'content_en.required' => 'Konten artikel (English) wajib diisi.',
-            'content_en.string' => 'Konten artikel (English) harus berupa teks.',
+            'content_en.required' => 'Konten artikel (EN) wajib diisi.',
+            'content_en.string' => 'Konten artikel (EN) harus berupa teks.',
 
             // Shared fields
             'thumbnail.image' => 'File harus berupa gambar.',
@@ -90,7 +90,6 @@ class StoreRequest extends FormRequest
             'status.required' => 'Status artikel wajib diisi.',
             'status.in' => 'Status artikel harus berupa draft atau published.',
 
-            
             'published_at.date' => 'Tanggal publish tidak valid.',
 
             'categories.required' => 'Kategori wajib dipilih minimal 1.',
@@ -108,30 +107,30 @@ class StoreRequest extends FormRequest
     {
         return [
             // Indonesian fields
-            'title_id.required' => 'Article title (Indonesia) is required.',
-            'title_id.string' => 'Article title (Indonesia) must be a string.',
-            'title_id.max' => 'Article title (Indonesia) maximum 255 characters.',
+            'title_id.required' => 'Article title (ID) is required.',
+            'title_id.string' => 'Article title (ID) must be a string.',
+            'title_id.max' => 'Article title (ID) maximum 255 characters.',
 
-            'slug_id.unique' => 'Slug (Indonesia) already taken.',
+            'slug_id.unique' => 'Slug (ID) already taken.',
 
-            'description_id.required' => 'Article description (Indonesia) is required.',
-            'description_id.string' => 'Article description (Indonesia) must be a string.',
+            'description_id.required' => 'Article description (ID) is required.',
+            'description_id.string' => 'Article description (ID) must be a string.',
 
-            'content_id.required' => 'Article content (Indonesia) is required.',
-            'content_id.string' => 'Article content (Indonesia) must be a string.',
+            'content_id.required' => 'Article content (ID) is required.',
+            'content_id.string' => 'Article content (ID) must be a string.',
 
             // English fields
-            'title_en.required' => 'Article title (English) is required.',
-            'title_en.string' => 'Article title (English) must be a string.',
-            'title_en.max' => 'Article title (English) maximum 255 characters.',
+            'title_en.required' => 'Article title (EN) is required.',
+            'title_en.string' => 'Article title (EN) must be a string.',
+            'title_en.max' => 'Article title (EN) maximum 255 characters.',
 
-            'slug_en.unique' => 'Slug (English) already taken.',
+            'slug_en.unique' => 'Slug (EN) already taken.',
 
-            'description_en.required' => 'Article description (English) is required.',
-            'description_en.string' => 'Article description (English) must be a string.',
+            'description_en.required' => 'Article description (EN) is required.',
+            'description_en.string' => 'Article description (EN) must be a string.',
 
-            'content_en.required' => 'Article content (English) is required.',
-            'content_en.string' => 'Article content (English) must be a string.',
+            'content_en.required' => 'Article content (EN) is required.',
+            'content_en.string' => 'Article content (EN) must be a string.',
 
             // Shared fields
             'thumbnail.image' => 'File must be an image.',

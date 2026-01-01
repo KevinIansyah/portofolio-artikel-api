@@ -21,14 +21,22 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $locale = app()->getLocale();
+        $categorySlug = 'slug_' . $locale;
+        $tagSlug = 'slug_' . $locale;
 
         $query = Article::where('status', 'published')
             ->byLocale($locale)
-            ->with(['categories:id,name']);
+            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
         if ($request->has('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('slug', $request->category);
+            $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
+                $q->where($categorySlug, $request->category);
+            });
+        }
+
+        if ($request->has('tag')) {
+            $query->whereHas('tags', function ($q) use ($tagSlug, $request) {
+                $q->where($tagSlug, $request->tag);
             });
         }
 
@@ -48,7 +56,7 @@ class ArticleController extends Controller
 
         $article = Article::where("slug_{$locale}", $slug)
             ->where('status', 'published')
-            ->with(['categories:id,name,slug', 'user:id,name,email,avatar'])
+            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name,email,avatar'])
             ->firstOrFail();
 
         $article->increment('views');
@@ -67,7 +75,7 @@ class ArticleController extends Controller
             if ($request->hasFile('thumbnail')) {
                 $data['thumbnail_url'] = $this->uploadThumbnail(
                     $request->file('thumbnail'),
-                    $request->title_id
+                    $data['title_id'] ?? $data['title_en'] ?? 'thumbnail'
                 );
             }
 
@@ -81,9 +89,14 @@ class ArticleController extends Controller
                 $article->categories()->sync($request->categories);
             }
 
+            if ($request->has('tags')) {
+                $article->tags()->sync($request->tags);
+            }
+
+
             DB::commit();
 
-            $article->load(['categories:id,name', 'user:id,name']);
+            $article->load(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
             return ApiResponse::success($article, __('messages.articles.store_success'), 201);
         } catch (\Exception $e) {
@@ -107,12 +120,15 @@ class ArticleController extends Controller
 
             if ($request->hasFile('thumbnail')) {
                 if ($article->thumbnail_url) {
+                    Log::info('Deleting old thumbnail', [
+                        'thumbnail_url' => $article->thumbnail_url,
+                    ]);
                     $this->deleteThumbnail($article->thumbnail_url);
                 }
 
                 $data['thumbnail_url'] = $this->uploadThumbnail(
                     $request->file('thumbnail'),
-                    $request->title_id ?? $article->title_id
+                    $data['title_id'] ?? $data['title_en'] ?? $article->title_id ?? $article->title_en
                 );
             }
 
@@ -126,9 +142,13 @@ class ArticleController extends Controller
                 $article->categories()->sync($request->categories);
             }
 
+            if ($request->has('tags')) {
+                $article->tags()->sync($request->tags);
+            }
+
             DB::commit();
 
-            $article->load(['categories:id,name', 'user:id,name']);
+            $article->load(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
             return ApiResponse::success($article, __('messages.articles.update_success'));
         } catch (\Exception $e) {
@@ -153,6 +173,8 @@ class ArticleController extends Controller
             }
 
             $article->categories()->detach();
+            $article->tags()->detach();
+            
             $article->delete();
 
             DB::commit();
@@ -195,6 +217,7 @@ class ArticleController extends Controller
                 ],
             ],
             'categories' => $article->categories,
+            'tags' => $article->tags,
             'created_at' => $article->created_at,
             'updated_at' => $article->updated_at,
         ], __('messages.articles.translations_success'));
@@ -202,27 +225,32 @@ class ArticleController extends Controller
 
     private function uploadThumbnail($file, $title): string
     {
-        $filename = time() . '_' . Str::slug($title) . '.webp';
+        $slug = Str::slug($title);
+        $timestamp = time();
+        $filename = "{$timestamp}-{$slug}.webp";
+
         $path = 'articles/' . $filename;
+        $fullPath = storage_path('app/public/' . $path);
 
         $manager = new ImageManager(new Driver());
 
         $image = $manager
-            ->read($file)
-            ->resize(1200, null)
-            ->toWebp(85);
+            ->read($file->getRealPath())
+            ->scale(width: 1200)
+            ->toWebp(quality: 85);
 
         Storage::disk('public')->put($path, (string) $image);
 
         OptimizerChainFactory::create()
-            ->optimize(storage_path('app/public/' . $path));
+            ->optimize($fullPath);
 
         return Storage::url($path);
     }
 
     private function deleteThumbnail($url): void
     {
-        $path = str_replace(asset('storage/'), '', $url);
+        $parsed = parse_url($url);
+        $path = str_replace('/storage/', '', $parsed['path'] ?? '');
 
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);

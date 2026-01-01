@@ -49,7 +49,7 @@ class Project extends Model
         'slug_en',
     ];
 
-     /**
+    /**
      * Get title based on current locale
      */
     public function getTitleAttribute(): string
@@ -96,5 +96,25 @@ class Project extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_project');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'tag_project');
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    public function scopeByLocale($query, $locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+        return $query->whereNotNull("title_{$locale}")
+            ->whereNotNull("content_{$locale}");
     }
 }

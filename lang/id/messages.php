@@ -15,6 +15,20 @@ return [
     'not_found' => 'Artikel tidak ditemukan',
   ],
 
+  // Projects
+  'projects' => [
+    'list_success' => 'Daftar proyek berhasil diambil',
+    'detail_success' => 'Detail proyek berhasil diambil',
+    'store_success' => 'Proyek berhasil disimpan',
+    'update_success' => 'Proyek berhasil diperbarui',
+    'delete_success' => 'Proyek berhasil dihapus',
+    'store_failed' => 'Gagal menyimpan proyek',
+    'update_failed' => 'Gagal memperbarui proyek',
+    'delete_failed' => 'Gagal menghapus proyek',
+    'translations_success' => 'Semua terjemahan proyek berhasil diambil',
+    'not_found' => 'Proyek tidak ditemukan',
+  ],
+
   // Categories
   'categories' => [
     'list_success' => 'Daftar kategori berhasil diambil',
@@ -22,17 +36,25 @@ return [
     'store_success' => 'Kategori berhasil disimpan',
     'update_success' => 'Kategori berhasil diperbarui',
     'delete_success' => 'Kategori berhasil dihapus',
+    'store_failed' => 'Gagal menyimpan kategori',
+    'update_failed' => 'Gagal memperbarui kategori',
+    'delete_failed' => 'Gagal menghapus kategori',
+    'translations_success' => 'Semua terjemahan kategori berhasil diambil',
     'not_found' => 'Kategori tidak ditemukan',
   ],
 
-  // Projects
-  'projects' => [
-    'list_success' => 'Daftar project berhasil diambil',
-    'detail_success' => 'Detail project berhasil diambil',
-    'store_success' => 'Project berhasil disimpan',
-    'update_success' => 'Project berhasil diperbarui',
-    'delete_success' => 'Project berhasil dihapus',
-    'not_found' => 'Project tidak ditemukan',
+  // tags
+  'tags' => [
+    'list_success' => 'Daftar label berhasil diambil',
+    'detail_success' => 'Detail label berhasil diambil',
+    'store_success' => 'Label berhasil disimpan',
+    'update_success' => 'Label berhasil diperbarui',
+    'delete_success' => 'Label berhasil dihapus',
+    'store_failed' => 'Gagal menyimpan label',
+    'update_failed' => 'Gagal memperbarui label',
+    'delete_failed' => 'Gagal menghapus label',
+    'translations_success' => 'Semua terjemahan label berhasil diambil',
+    'not_found' => 'Label tidak ditemukan',
   ],
 
   // Auth

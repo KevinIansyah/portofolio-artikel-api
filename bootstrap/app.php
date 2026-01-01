@@ -36,16 +36,29 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $setLocale = function ($request) {
+            $locale = $request->header('Accept-Language')
+                ?? $request->query('lang')
+                ?? 'id';
+
+            $supportedLocales = ['id', 'en'];
+            if (!in_array($locale, $supportedLocales)) {
+                $locale = 'id';
+            }
+
+            app()->setLocale($locale);
+        };
 
         /**
          * 401 UNAUTHENTICATED
          * Priority: Highest - handle before general exceptions
          */
-        $exceptions->render(function (AuthenticationException $e, $request) {
+        $exceptions->render(function (AuthenticationException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
+            $setLocale($request);
             return ApiResponse::unauthorized(__('messages.auth.unauthorized'));
         });
 
@@ -53,11 +66,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 403 FORBIDDEN
          * Handles authorization failures from policies, gates, and RoleMiddleware
          */
-        $exceptions->render(function (AuthorizationException $e, $request) {
+        $exceptions->render(function (AuthorizationException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
+            $setLocale($request);
             return ApiResponse::forbidden($e->getMessage() ?: __('messages.auth.forbidden'));
         });
 
@@ -65,10 +79,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 404 MODEL NOT FOUND
          * When Eloquent model is not found (e.g., User::findOrFail())
          */
-        $exceptions->render(function (ModelNotFoundException $e, $request) {
+        $exceptions->render(function (ModelNotFoundException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
+
+            $setLocale($request);
 
             $model = class_basename($e->getModel());
 
@@ -76,7 +92,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'Project'  => __('messages.projects.not_found'),
                 'Article'  => __('messages.articles.not_found'),
                 'Category' => __('messages.categories.not_found'),
-                'User'     => 'User tidak ditemukan',
+                'User'     => __('messages.general.not_found'),
             ];
 
             return ApiResponse::notFound(
@@ -88,10 +104,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 404 ROUTE NOT FOUND & NESTED MODEL NOT FOUND
          * Handles missing routes and route model binding failures
          */
-        $exceptions->render(function (NotFoundHttpException $e, $request) {
+        $exceptions->render(function (NotFoundHttpException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
+
+            $setLocale($request);
 
             $previous = $e->getPrevious();
 
@@ -103,7 +121,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'Project'  => __('messages.projects.not_found'),
                     'Article'  => __('messages.articles.not_found'),
                     'Category' => __('messages.categories.not_found'),
-                    'User'     => 'User tidak ditemukan',
+                    'User'     => __('messages.general.not_found'),
                 ];
 
                 return ApiResponse::notFound(
@@ -118,11 +136,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 405 METHOD NOT ALLOWED
          * When using wrong HTTP method (e.g., GET on POST-only route)
          */
-        $exceptions->render(function (MethodNotAllowedHttpException $e, $request) {
+        $exceptions->render(function (MethodNotAllowedHttpException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
+            $setLocale($request);
             return ApiResponse::error(
                 __('messages.general.method_not_allowed'),
                 405
@@ -133,11 +152,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 422 VALIDATION ERROR
          * From FormRequest or Validator failures
          */
-        $exceptions->render(function (ValidationException $e, $request) {
+        $exceptions->render(function (ValidationException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
+            $setLocale($request);
             return ApiResponse::validationError(
                 $e->errors(),
                 __('messages.general.validation_error')
@@ -148,11 +168,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * 429 TOO MANY REQUESTS
          * Rate limiting exceeded
          */
-        $exceptions->render(function (ThrottleRequestsException $e, $request) {
+        $exceptions->render(function (ThrottleRequestsException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
+            $setLocale($request);
             return ApiResponse::error(
                 __('messages.general.too_many_requests'),
                 429,
@@ -166,10 +187,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * DATABASE ERRORS
          * Handles database connection and query errors
          */
-        $exceptions->render(function (QueryException $e, $request) {
+        $exceptions->render(function (QueryException $e, $request) use ($setLocale) {
             if (! $request->is('api/*') || config('app.debug')) {
                 return null;
             }
+
+            $setLocale($request);
 
             // Duplicate entry error
             if ($e->getCode() === '23000') {
@@ -197,10 +220,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * GENERAL HTTP EXCEPTIONS
          * Handles other HTTP exceptions (400, 403, 500, etc.)
          */
-        $exceptions->render(function (HttpException $e, $request) {
+        $exceptions->render(function (HttpException $e, $request) use ($setLocale) {
             if (! $request->is('api/*')) {
                 return null;
             }
+
+            $setLocale($request);
 
             $statusCode = $e->getStatusCode();
             $message = $e->getMessage() ?: __('messages.general.error');
@@ -213,10 +238,12 @@ return Application::configure(basePath: dirname(__DIR__))
          * Catch-all for any other exceptions
          * MUST BE LAST
          */
-        $exceptions->render(function (Throwable $e, $request) {
+        $exceptions->render(function (Throwable $e, $request) use ($setLocale) {
             if (! $request->is('api/*') || config('app.debug')) {
                 return null;
             }
+
+            $setLocale($request);
 
             // Log the error for debugging
             Log::error('Unhandled exception', [

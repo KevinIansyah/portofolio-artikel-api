@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('tag_project', function (Blueprint $table) {
             $table->id();
-            $table->string('name_id');
-            $table->string('slug_id')->unique();
-            $table->string('name_en')->nullable();
-            $table->string('slug_en')->unique()->nullable();
-            $table->enum('type', ['article', 'project'])->default('article');
+            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('tag_project');
     }
 };

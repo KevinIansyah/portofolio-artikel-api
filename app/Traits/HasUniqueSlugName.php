@@ -12,14 +12,32 @@ trait HasUniqueSlugName
     public static function bootHasUniqueSlugName()
     {
         static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = static::generateUniqueSlugName($model->name);
-            }
+            $model->slug_id = static::generateUniqueSlugName(
+                'slug_id',
+                $model->name_id
+            );
+
+            $model->slug_en = static::generateUniqueSlugName(
+                'slug_en',
+                $model->name_en
+            );
         });
 
         static::updating(function ($model) {
-            if ($model->isDirty('name')) {
-                $model->slug = static::generateUniqueSlugName($model->name, $model->id);
+            if ($model->isDirty('name_id')) {
+                $model->slug_id = static::generateUniqueSlugName(
+                    'slug_id',
+                    $model->name_id,
+                    $model->id
+                );
+            }
+
+            if ($model->isDirty('name_en')) {
+                $model->slug_en = static::generateUniqueSlugName(
+                    'slug_en',
+                    $model->name_en,
+                    $model->id
+                );
             }
         });
     }
@@ -27,23 +45,24 @@ trait HasUniqueSlugName
     /**
      * Generate a unique slug for the model.
      */
-    public static function generateUniqueSlugName(string $name, $id = null): string
+    public static function generateUniqueSlugName(string $slugColumn, string $name, $id = null): string
     {
-        $slug = Str::slug($name, '-');
-        $originalSlug = $slug;
+        $slug = Str::slug($name);
+        $original = $slug;
         $counter = 1;
 
-        $query = static::where('slug', $slug);
+        $query = static::where($slugColumn, $slug);
 
         if ($id) {
             $query->where('id', '!=', $id);
         }
 
         while ($query->exists()) {
-            $slug = $originalSlug . '-' . $counter;
+            $slug = "{$original}-{$counter}";
             $counter++;
 
-            $query = static::where('slug', $slug);
+            $query = static::where($slugColumn, $slug);
+
             if ($id) {
                 $query->where('id', '!=', $id);
             }

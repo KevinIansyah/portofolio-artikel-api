@@ -27,16 +27,47 @@ class LoginRequest extends ApiRequest
         ];
     }
 
-
+    /**
+     * Get custom validation messages
+     */
     public function messages(): array
+    {
+        $locale = app()->getLocale();
+
+        if ($locale == "en") {
+            return $this->englishMessages();
+        }
+
+        return $this->indonesianMessages();
+    }
+
+    /**
+     * Indonesian validation messages
+     */
+    private function indonesianMessages(): array
     {
         return [
             'email.required' => 'Email wajib diisi.',
-            'email.string' => 'Email tidak valid.',
-            'email.email' => 'Format email tidak valid.',
-
+            'email.string' => 'Email harus berupa string.',
+            'email.email' => 'Email harus berupa alamat email yang valid.',
+            
             'password.required' => 'Kata sandi wajib diisi.',
-            'password.string' => 'Kata sandi tidak valid.',
+            'password.string' => 'Kata sandi harus berupa string.',
+        ];
+    }
+
+    /**
+     * English validation messages
+     */
+    private function englishMessages(): array
+    {
+        return [
+            'email.required' => 'Email is required.',
+            'email.string' => 'Email must be a string.',
+            'email.email' => 'Email must be a valid email address.',
+
+            'password.required' => 'Password is required.',
+            'password.string' => 'Password must be a string.',
         ];
     }
 }
