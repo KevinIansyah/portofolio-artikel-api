@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\Settings\PasswordController;
 use App\Http\Controllers\Api\Settings\ProfileController;
+use App\Http\Controllers\Api\SkillController;
 use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/tags/{tag}', [TagController::class, 'update']);
         Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
         Route::get('/tags/{tag}/translations', [TagController::class, 'translations']);
+
+        Route::post('/skills', [TagController::class, 'store']);
+        Route::put('/skills/{skill}', [TagController::class, 'update']);
+        Route::delete('/skills/{skill}', [TagController::class, 'destroy']);
+        Route::get('/skills/{skill}/translations', [TagController::class, 'translations']);
     });
 });
 
@@ -56,5 +62,6 @@ Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 Route::get('/categories/projects', [CategoryController::class, 'projectCategories']);
 Route::get('/categories/articles', [CategoryController::class, 'articleCategories']);
 
-Route::get('/tags/projects', [TagController::class, 'projectTags']);
-Route::get('/tags/articles', [TagController::class, 'articleTags']);
+Route::get('/tags', [TagController::class, 'index']);
+
+Route::get('/skills', [SkillController::class, 'index']);

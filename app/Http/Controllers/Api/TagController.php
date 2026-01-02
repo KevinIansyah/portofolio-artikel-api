@@ -12,28 +12,13 @@ use Illuminate\Support\Facades\Log;
 
 class TagController extends Controller
 {
-    public function projectTags()
+    public function index()
     {
         $locale = app()->getLocale();
         $name = 'name_' . $locale;
         $slug = 'slug_' . $locale;
 
         $tags = Tag::select('id', $name, $slug)
-            ->where('type', 'project')
-            ->orderBy($name)
-            ->get();
-
-        return ApiResponse::success($tags, __('messages.tags.list_success'));
-    }
-
-    public function articleTags()
-    {
-        $locale = app()->getLocale();
-        $name = 'name_' . $locale;
-        $slug = 'slug_' . $locale;
-
-        $tags = Tag::select('id', $name, $slug)
-            ->where('type', 'article')
             ->orderBy($name)
             ->get();
 
@@ -50,7 +35,6 @@ class TagController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to create tag: ' . $e->getMessage(), [
                 'name' => $request->name,
-                'type' => $request->type,
             ]);
 
             return ApiResponse::error(__('messages.tags.store_failed'), 500);
@@ -67,7 +51,6 @@ class TagController extends Controller
             Log::error('Failed to update tag: ' . $e->getMessage(), [
                 'id' => $tag->id,
                 'name' => $request->name,
-                'type' => $request->type,
             ]);
 
             return ApiResponse::error(__('messages.tags.update_failed'), 500);
@@ -77,10 +60,9 @@ class TagController extends Controller
     public function destroy(Tag $tag)
     {
         try {
-            $projectsCount = $tag->projects()->count();
             $articlesCount = $tag->articles()->count();
 
-            if ($projectsCount > 0 || $articlesCount > 0) {
+            if ($articlesCount > 0) {
                 return ApiResponse::error(
                     __('messages.general.relation_constraint'),
                     400
@@ -94,7 +76,6 @@ class TagController extends Controller
             Log::error('Failed to delete tag: ' . $e->getMessage(), [
                 'id' => $tag->id,
                 'name' => $tag->name,
-                'type' => $tag->type,
             ]);
 
             return ApiResponse::error(__('messages.tags.delete_failed'), 500);
@@ -105,7 +86,6 @@ class TagController extends Controller
     {
         return ApiResponse::success([
             'id' => $tag->id,
-            'type' => $tag->type,
             'translations' => [
                 'id' => [
                     'name' => $tag->name_id,

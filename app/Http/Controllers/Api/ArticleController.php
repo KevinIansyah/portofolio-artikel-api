@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Articles\StoreRequest;
 use App\Http\Requests\Articles\UpdateRequest;
 use App\Models\Article;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,10 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class ArticleController extends Controller
 {
+    public function __construct(
+        protected ImageService $imageService
+    ) {}
+
     public function index(Request $request)
     {
         $locale = app()->getLocale();
@@ -73,9 +78,10 @@ class ArticleController extends Controller
             $data['user_id'] = $request->user()->id;
 
             if ($request->hasFile('thumbnail')) {
-                $data['thumbnail_url'] = $this->uploadThumbnail(
-                    $request->file('thumbnail'),
-                    $data['title_id'] ?? $data['title_en'] ?? 'thumbnail'
+                $data['thumbnail_url'] = $this->imageService->upload(
+                    file: $request->file('thumbnail'),
+                    name: $data['title'],
+                    folder: 'articles'
                 );
             }
 
@@ -119,16 +125,11 @@ class ArticleController extends Controller
             $data = $request->validated();
 
             if ($request->hasFile('thumbnail')) {
-                if ($article->thumbnail_url) {
-                    Log::info('Deleting old thumbnail', [
-                        'thumbnail_url' => $article->thumbnail_url,
-                    ]);
-                    $this->deleteThumbnail($article->thumbnail_url);
-                }
-
-                $data['thumbnail_url'] = $this->uploadThumbnail(
-                    $request->file('thumbnail'),
-                    $data['title_id'] ?? $data['title_en'] ?? $article->title_id ?? $article->title_en
+                $data['thumbnail_url'] = $this->imageService->update(
+                    oldUrl: $article->thumbnail_url,
+                    newFile: $request->file('thumbnail'),
+                    name: $data['title'],
+                    folder: 'articles'
                 );
             }
 
@@ -169,12 +170,12 @@ class ArticleController extends Controller
             DB::beginTransaction();
 
             if ($article->thumbnail_url) {
-                $this->deleteThumbnail($article->thumbnail_url);
+                $this->imageService->delete($article->thumbnail_url);
             }
 
             $article->categories()->detach();
             $article->tags()->detach();
-            
+
             $article->delete();
 
             DB::commit();
@@ -221,39 +222,5 @@ class ArticleController extends Controller
             'created_at' => $article->created_at,
             'updated_at' => $article->updated_at,
         ], __('messages.articles.translations_success'));
-    }
-
-    private function uploadThumbnail($file, $title): string
-    {
-        $slug = Str::slug($title);
-        $timestamp = time();
-        $filename = "{$timestamp}-{$slug}.webp";
-
-        $path = 'articles/' . $filename;
-        $fullPath = storage_path('app/public/' . $path);
-
-        $manager = new ImageManager(new Driver());
-
-        $image = $manager
-            ->read($file->getRealPath())
-            ->scale(width: 1200)
-            ->toWebp(quality: 85);
-
-        Storage::disk('public')->put($path, (string) $image);
-
-        OptimizerChainFactory::create()
-            ->optimize($fullPath);
-
-        return Storage::url($path);
-    }
-
-    private function deleteThumbnail($url): void
-    {
-        $parsed = parse_url($url);
-        $path = str_replace('/storage/', '', $parsed['path'] ?? '');
-
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
     }
 }

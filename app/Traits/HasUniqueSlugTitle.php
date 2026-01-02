@@ -9,22 +9,33 @@ trait HasUniqueSlugTitle
     /**
      * Boot the trait.
      */
-    protected static function bootHasUniqueSlugTitle()
+    public static function bootHasUniqueSlugTitle()
     {
         static::creating(function ($model) {
-            $model->slug_id = static::generateUniqueSlug(
-                'slug_id',
-                $model->title_id
-            );
+            if (!empty($model->title_id)) {
+                $model->slug_id = static::generateUniqueSlug(
+                    'slug_id',
+                    $model->title_id
+                );
+            }
 
-            $model->slug_en = static::generateUniqueSlug(
-                'slug_en',
-                $model->title_en
-            );
+            if (!empty($model->title_en)) {
+                $model->slug_en = static::generateUniqueSlug(
+                    'slug_en',
+                    $model->title_en
+                );
+            }
+
+            if (!empty($model->title)) {
+                $model->slug = static::generateUniqueSlug(
+                    'slug',
+                    $model->title
+                );
+            }
         });
 
         static::updating(function ($model) {
-            if ($model->isDirty('title_id')) {
+            if ($model->isDirty('title_id') && !empty($model->title_id)) {
                 $model->slug_id = static::generateUniqueSlug(
                     'slug_id',
                     $model->title_id,
@@ -32,10 +43,18 @@ trait HasUniqueSlugTitle
                 );
             }
 
-            if ($model->isDirty('title_en')) {
+            if ($model->isDirty('title_en') && !empty($model->title_en)) {
                 $model->slug_en = static::generateUniqueSlug(
                     'slug_en',
                     $model->title_en,
+                    $model->id
+                );
+            }
+
+            if ($model->isDirty('title') && !empty($model->title)) {
+                $model->slug = static::generateUniqueSlug(
+                    'slug',
+                    $model->title,
                     $model->id
                 );
             }
@@ -51,23 +70,25 @@ trait HasUniqueSlugTitle
         $original = $slug;
         $counter = 1;
 
-        $query = static::where($slugColumn, $slug);
-
-        if ($id) {
-            $query->where('id', '!=', $id);
-        }
-
-        while ($query->exists()) {
-            $slug = $original . '-' . $counter;
+        while (static::slugExists($slugColumn, $slug, $id)) {
+            $slug = "{$original}-{$counter}";
             $counter++;
-
-            $query = static::where($slugColumn, $slug);
-
-            if ($id) {
-                $query->where('id', '!=', $id);
-            }
         }
 
         return $slug;
+    }
+
+    /**
+     * Check if slug exists.
+     */
+    protected static function slugExists(string $slugColumn, string $slug, $id = null): bool
+    {
+        $query = static::where($slugColumn, $slug);
+
+        if ($id !== null) {
+            $query->where('id', '!=', $id);
+        }
+
+        return $query->exists();
     }
 }

@@ -37,6 +37,8 @@ class StoreRequest extends FormRequest
             'published_at' => 'nullable|date',
             'categories' => 'required|array|min:1',
             'categories.*' => 'required|exists:categories,id',
+            'skills' => 'required|array|min:1',
+            'skills.*' => 'required|exists:skills,id',
         ];
     }
 

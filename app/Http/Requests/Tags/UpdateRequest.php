@@ -22,30 +22,29 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $category = $this->route('tag');
+        $tag = $this->route('tag');
 
         return [
             'name_id' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tags')->where(function ($query) use ($category) {
+                Rule::unique('tags')->where(function ($query) use ($tag) {
                     return $query->where('name_id', $this->name_id)
-                        ->where('type', $this->type ?? $category->type)
-                        ->where('id', '!=', $category->id);
+                        ->where('type', $this->type ?? $tag->type)
+                        ->where('id', '!=', $tag->id);
                 }),
             ],
             'name_en' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tags')->where(function ($query) use ($category) {
+                Rule::unique('tags')->where(function ($query) use ($tag) {
                     return $query->where('name_en', $this->name_en)
-                        ->where('type', $this->type ?? $category->type)
-                        ->where('id', '!=', $category->id);
+                        ->where('type', $this->type ?? $tag->type)
+                        ->where('id', '!=', $tag->id);
                 }),
             ],
-            'type' => 'required|in:article,project',
         ];
     }
 
@@ -72,15 +71,12 @@ class UpdateRequest extends FormRequest
             'name_id.required' => 'Nama label (ID) wajib diisi.',
             'name_id.string' => 'Nama label (ID) harus berupa string.',
             'name_id.max' => 'Nama label (ID) tidak boleh lebih dari 255 karakter.',
-            'name_id.unique' => 'Nama label (ID) sudah digunakan untuk tipe label ini.',
+            'name_id.unique' => 'Nama label (ID) sudah digunakan.',
 
             'name_en.required' => 'Nama label (EN) wajib diisi.',
             'name_en.string' => 'Nama label (EN) harus berupa string.',
             'name_en.max' => 'Nama label (EN) tidak boleh lebih dari 255 karakter.',
-            'name_en.unique' => 'Nama label (EN) sudah digunakan untuk tipe label ini.',
-
-            'type.required' => 'Tipe label wajib diisi.',
-            'type.in' => 'Tipe label harus berupa article atau project.',
+            'name_en.unique' => 'Nama label (EN) sudah digunakan.',
         ];
     }
 
@@ -93,15 +89,12 @@ class UpdateRequest extends FormRequest
             'name_id.required' => 'Tag name (ID) is required.',
             'name_id.string' => 'Tag name (ID) must be a string.',
             'name_id.max' => 'Tag name (ID) may not be greater than 255 characters.',
-            'name_id.unique' => 'Tag name (ID) has already been taken for this tag type.',
+            'name_id.unique' => 'Tag name (ID) has already been taken.',
 
             'name_en.required' => 'Tag name (EN) is required.',
             'name_en.string' => 'Tag name (EN) must be a string.',
             'name_en.max' => 'Tag name (EN) may not be greater than 255 characters.',
-            'name_en.unique' => 'Tag name (EN) has already been taken for this tag type.',
-
-            'type.required' => 'Tag type is required.',
-            'type.in' => 'Tag type must be either article or project.',
+            'name_en.unique' => 'Tag name (EN) has already been taken.',
         ];
     }
 }
