@@ -6,6 +6,7 @@ return [
     'list_success' => 'Articles retrieved successfully',
     'detail_success' => 'Article detail retrieved successfully',
     'store_success' => 'Article created successfully',
+    'edit_success' => 'Article for edit retrieved successfully',
     'update_success' => 'Article updated successfully',
     'delete_success' => 'Article deleted successfully',
     'store_failed' => 'Failed to create article',
@@ -20,6 +21,7 @@ return [
     'list_success' => 'Projects retrieved successfully',
     'detail_success' => 'Project detail retrieved successfully',
     'store_success' => 'Project created successfully',
+    'edit_success' => 'Project for edit retrieved successfully',
     'update_success' => 'Project updated successfully',
     'delete_success' => 'Project deleted successfully',
     'store_failed' => 'Failed to create project',
@@ -34,6 +36,7 @@ return [
     'list_success' => 'Categories retrieved successfully',
     'detail_success' => 'Category detail retrieved successfully',
     'store_success' => 'Category created successfully',
+    'edit_success' => 'Category for edit retrieved successfully',
     'update_success' => 'Category updated successfully',
     'delete_success' => 'Category deleted successfully',
     'store_failed' => 'Failed to create category',
@@ -48,6 +51,7 @@ return [
     'list_success' => 'Tags retrieved successfully',
     'detail_success' => 'Tag detail retrieved successfully',
     'store_success' => 'Tag created successfully',
+    'edit_success' => 'Tag for edit retrieved successfully',
     'update_success' => 'Tag updated successfully',
     'delete_success' => 'Tag deleted successfully',
     'store_failed' => 'Failed to create tag',
@@ -55,6 +59,21 @@ return [
     'delete_failed' => 'Failed to delete tag',
     'translations_success' => 'All tag translations retrieved successfully',
     'not_found' => 'Tag not found',
+  ],
+
+  // Skills
+  'skills' => [
+    'list_success' => 'Skills retrieved successfully',
+    'detail_success' => 'Skill detail retrieved successfully',
+    'store_success' => 'Skill created successfully',
+    'edit_success' => 'Skill for edit retrieved successfully',
+    'update_success' => 'Skill updated successfully',
+    'delete_success' => 'Skill deleted successfully',
+    'store_failed' => 'Failed to create skill',
+    'update_failed' => 'Failed to update skill',
+    'delete_failed' => 'Failed to delete skill',
+    'translations_success' => 'All skill translations retrieved successfully',
+    'not_found' => 'Skill not found',
   ],
 
   // Auth

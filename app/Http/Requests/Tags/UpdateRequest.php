@@ -29,21 +29,13 @@ class UpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tags')->where(function ($query) use ($tag) {
-                    return $query->where('name_id', $this->name_id)
-                        ->where('type', $this->type ?? $tag->type)
-                        ->where('id', '!=', $tag->id);
-                }),
+                Rule::unique('tags', 'name_id')->ignore($tag->id),
             ],
             'name_en' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tags')->where(function ($query) use ($tag) {
-                    return $query->where('name_en', $this->name_en)
-                        ->where('type', $this->type ?? $tag->type)
-                        ->where('id', '!=', $tag->id);
-                }),
+                Rule::unique('tags', 'name_en')->ignore($tag->id),
             ],
         ];
     }

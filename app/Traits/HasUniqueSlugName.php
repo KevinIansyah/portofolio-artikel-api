@@ -7,56 +7,47 @@ use Illuminate\Support\Str;
 trait HasUniqueSlugName
 {
     /**
+     * Get slug field mappings.
+     * Override this method in model to customize.
+     */
+    protected function getSlugMappings(): array
+    {
+        return [
+            'name' => 'slug',
+            'name_id' => 'slug_id',
+            'name_en' => 'slug_en',
+        ];
+    }
+
+    /**
      * Boot the trait.
      */
     public static function bootHasUniqueSlugName()
     {
         static::creating(function ($model) {
-            if (!empty($model->name_id)) {
-                $model->slug_id = static::generateUniqueSlugName(
-                    'slug_id',
-                    $model->name_id
-                );
-            }
+            $slugMappings = $model->getSlugMappings();
 
-            if (!empty($model->name_en)) {
-                $model->slug_en = static::generateUniqueSlugName(
-                    'slug_en',
-                    $model->name_en
-                );
-            }
-
-            if (!empty($model->name)) {
-                $model->slug = static::generateUniqueSlugName(
-                    'slug',
-                    $model->name
-                );
+            foreach ($slugMappings as $sourceField => $slugField) {
+                if (!empty($model->$sourceField)) {
+                    $model->$slugField = static::generateUniqueSlugName(
+                        $slugField,
+                        $model->$sourceField
+                    );
+                }
             }
         });
 
         static::updating(function ($model) {
-            if ($model->isDirty('name_id') && !empty($model->name_id)) {
-                $model->slug_id = static::generateUniqueSlugName(
-                    'slug_id',
-                    $model->name_id,
-                    $model->id
-                );
-            }
+            $slugMappings = $model->getSlugMappings();
 
-            if ($model->isDirty('name_en') && !empty($model->name_en)) {
-                $model->slug_en = static::generateUniqueSlugName(
-                    'slug_en',
-                    $model->name_en,
-                    $model->id
-                );
-            }
-
-            if ($model->isDirty('name') && !empty($model->name)) {
-                $model->slug = static::generateUniqueSlugName(
-                    'slug',
-                    $model->name,
-                    $model->id
-                );
+            foreach ($slugMappings as $sourceField => $slugField) {
+                if ($model->isDirty($sourceField) && !empty($model->$sourceField)) {
+                    $model->$slugField = static::generateUniqueSlugName(
+                        $slugField,
+                        $model->$sourceField,
+                        $model->id
+                    );
+                }
             }
         });
     }

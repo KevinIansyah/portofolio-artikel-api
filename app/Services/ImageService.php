@@ -13,13 +13,6 @@ class ImageService
 {
   /**
    * Upload and optimize image.
-   *
-   * @param UploadedFile $file
-   * @param string $name Name for the file (will be slugified)
-   * @param string $folder Folder to store the image (e.g., 'projects', 'articles', 'products')
-   * @param int $width Max width for scaling
-   * @param int $quality WebP quality (1-100)
-   * @return string Public URL of the uploaded image
    */
   public function upload(
     UploadedFile $file,
@@ -52,9 +45,6 @@ class ImageService
 
   /**
    * Delete image from storage.
-   *
-   * @param string|null $url
-   * @return void
    */
   public function delete(?string $url): void
   {
@@ -72,14 +62,6 @@ class ImageService
 
   /**
    * Update image (delete old and upload new).
-   *
-   * @param string|null $oldUrl
-   * @param UploadedFile $newFile
-   * @param string $name
-   * @param string $folder
-   * @param int $width
-   * @param int $quality
-   * @return string
    */
   public function update(
     ?string $oldUrl,

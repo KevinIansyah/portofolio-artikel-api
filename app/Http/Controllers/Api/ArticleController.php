@@ -11,11 +11,6 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class ArticleController extends Controller
 {
@@ -45,10 +40,6 @@ class ArticleController extends Controller
             });
         }
 
-        // if ($request->has('search')) {
-        //     $query->search($request->search);
-        // }
-
         $articles = $query->latest('published_at')
             ->paginate($request->get('per_page', 12));
 
@@ -61,7 +52,7 @@ class ArticleController extends Controller
 
         $article = Article::where("slug_{$locale}", $slug)
             ->where('status', 'published')
-            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name,email,avatar'])
+            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name,email,avatar_url'])
             ->firstOrFail();
 
         $article->increment('views');
@@ -80,7 +71,7 @@ class ArticleController extends Controller
             if ($request->hasFile('thumbnail')) {
                 $data['thumbnail_url'] = $this->imageService->upload(
                     file: $request->file('thumbnail'),
-                    name: $data['title'],
+                    name: $data['title_id'],
                     folder: 'articles'
                 );
             }
@@ -104,7 +95,7 @@ class ArticleController extends Controller
 
             $article->load(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
-            return ApiResponse::success($article, __('messages.articles.store_success'), 201);
+            return ApiResponse::created($article, __('messages.articles.store_success'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -113,8 +104,39 @@ class ArticleController extends Controller
                 'title_id' => $request->title_id ?? null,
             ]);
 
-            return ApiResponse::error(__('messages.articles.store_failed'), 500);
+            return ApiResponse::serverError(__('messages.articles.store_failed'), 500);
         }
+    }
+
+    public function edit(Article $article)
+    {
+        $article = [
+            'id' => $article->id,
+            'user_id' => $article->user_id,
+            'thumbnail_url' => $article->thumbnail_url,
+            'status' => $article->status,
+            'views' => $article->views,
+            'reading_time' => $article->reading_time,
+            'published_at' => $article->published_at,
+            'translations' => [
+                'id' => [
+                    'title' => $article->title_id,
+                    'description' => $article->description_id,
+                    'content' => $article->content_id,
+                ],
+                'en' => [
+                    'title' => $article->title_en,
+                    'description' => $article->description_en,
+                    'content' => $article->content_en,
+                ],
+            ],
+            'categories' => $article->categories,
+            'tags' => $article->tags,
+            'created_at' => $article->created_at,
+            'updated_at' => $article->updated_at,
+        ];
+
+        return ApiResponse::success($article, __('messages.articles.edit_success'));
     }
 
     public function update(UpdateRequest $request, Article $article)
@@ -128,7 +150,7 @@ class ArticleController extends Controller
                 $data['thumbnail_url'] = $this->imageService->update(
                     oldUrl: $article->thumbnail_url,
                     newFile: $request->file('thumbnail'),
-                    name: $data['title'],
+                    name: $data['title_id'],
                     folder: 'articles'
                 );
             }
@@ -151,7 +173,7 @@ class ArticleController extends Controller
 
             $article->load(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
-            return ApiResponse::success($article, __('messages.articles.update_success'));
+            return ApiResponse::updated($article, __('messages.articles.update_success'));
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -160,7 +182,7 @@ class ArticleController extends Controller
                 'article_id' => $article->id,
             ]);
 
-            return ApiResponse::error(__('messages.articles.update_failed'), 500);
+            return ApiResponse::serverError(__('messages.articles.update_failed'), 500);
         }
     }
 
@@ -180,7 +202,7 @@ class ArticleController extends Controller
 
             DB::commit();
 
-            return ApiResponse::success(null, __('messages.articles.delete_success'));
+            return ApiResponse::deleted(__('messages.articles.delete_success'));
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -189,38 +211,7 @@ class ArticleController extends Controller
                 'article_id' => $article->id,
             ]);
 
-            return ApiResponse::error(__('messages.articles.delete_failed'), 500);
+            return ApiResponse::serverError(__('messages.articles.delete_failed'), 500);
         }
-    }
-
-    public function translations(Article $article)
-    {
-        return ApiResponse::success([
-            'id' => $article->id,
-            'user_id' => $article->user_id,
-            'thumbnail_url' => $article->thumbnail_url,
-            'status' => $article->status,
-            'views' => $article->views,
-            'reading_time' => $article->reading_time,
-            'published_at' => $article->published_at,
-            'translations' => [
-                'id' => [
-                    'title' => $article->title_id,
-                    'slug' => $article->slug_id,
-                    'description' => $article->description_id,
-                    'content' => $article->content_id,
-                ],
-                'en' => [
-                    'title' => $article->title_en,
-                    'slug' => $article->slug_en,
-                    'description' => $article->description_en,
-                    'content' => $article->content_en,
-                ],
-            ],
-            'categories' => $article->categories,
-            'tags' => $article->tags,
-            'created_at' => $article->created_at,
-            'updated_at' => $article->updated_at,
-        ], __('messages.articles.translations_success'));
     }
 }

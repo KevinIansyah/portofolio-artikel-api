@@ -26,11 +26,11 @@ class UpdateProfileRequest extends ApiRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $this->user()->id],
             'avatar' => ['nullable', 'image', 'max:2048'],
             'bio' => ['nullable', 'string', 'max:1000'],
-            'instagram' => ['nullable', 'string', 'max:255', 'url'],
-            'github' => ['nullable', 'string', 'max:255', 'url'],
-            'linkedin' => ['nullable', 'string', 'max:255', 'url'],
-            'facebook' => ['nullable', 'string', 'max:255', 'url'],
-            'twitter' => ['nullable', 'string', 'max:255', 'url'],
+            'instagram_url' => ['nullable', 'string', 'max:255', 'url'],
+            'github_url' => ['nullable', 'string', 'max:255', 'url'],
+            'linkedin_url' => ['nullable', 'string', 'max:255', 'url'],
+            'facebook_url' => ['nullable', 'string', 'max:255', 'url'],
+            'twitter_url' => ['nullable', 'string', 'max:255', 'url'],
         ];
     }
 
@@ -53,25 +53,25 @@ class UpdateProfileRequest extends ApiRequest
             'bio.string' => 'Bio tidak valid.',
             'bio.max' => 'Bio maksimal 1000 karakter.',
 
-            'instagram.string' => 'Instagram tidak valid.',
-            'instagram.max' => 'Instagram maksimal 255 karakter.',
-            'instagram.url' => 'Instagram harus berupa URL yang valid.',
+            'instagram_url.string' => 'Instagram tidak valid.',
+            'instagram_url.max' => 'Instagram maksimal 255 karakter.',
+            'instagram_url.url' => 'Instagram harus berupa URL yang valid.',
 
-            'github.string' => 'GitHub tidak valid.',
-            'github.max' => 'GitHub maksimal 255 karakter.',
-            'github.url' => 'GitHub harus berupa URL yang valid.',
+            'github_url.string' => 'GitHub tidak valid.',
+            'github_url.max' => 'GitHub maksimal 255 karakter.',
+            'github_url.url' => 'GitHub harus berupa URL yang valid.',
 
-            'linkedin.string' => 'LinkedIn tidak valid.',
-            'linkedin.max' => 'LinkedIn maksimal 255 karakter.',
-            'linkedin.url' => 'LinkedIn harus berupa URL yang valid.',
+            'linkedin_url.string' => 'LinkedIn tidak valid.',
+            'linkedin_url.max' => 'LinkedIn maksimal 255 karakter.',
+            'linkedin_url.url' => 'LinkedIn harus berupa URL yang valid.',
 
-            'facebook.string' => 'Facebook tidak valid.',
-            'facebook.max' => 'Facebook maksimal 255 karakter.',
-            'facebook.url' => 'Facebook harus berupa URL yang valid.',
+            'facebook_url.string' => 'Facebook tidak valid.',
+            'facebook_url.max' => 'Facebook maksimal 255 karakter.',
+            'facebook_url.url' => 'Facebook harus berupa URL yang valid.',
 
-            'twitter.string' => 'Twitter tidak valid.',
-            'twitter.max' => 'Twitter maksimal 255 karakter.',
-            'twitter.url' => 'Twitter harus berupa URL yang valid.',
+            'twitter_url.string' => 'Twitter tidak valid.',
+            'twitter_url.max' => 'Twitter maksimal 255 karakter.',
+            'twitter_url.url' => 'Twitter harus berupa URL yang valid.',
         ];
     }
 }

@@ -142,7 +142,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $setLocale($request);
-            return ApiResponse::error(
+            return ApiResponse::methodNotAllowed(
                 __('messages.general.method_not_allowed'),
                 405
             );
@@ -174,7 +174,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $setLocale($request);
-            return ApiResponse::error(
+            return ApiResponse::rateLimited(
                 __('messages.general.too_many_requests'),
                 429,
                 [
@@ -196,7 +196,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // Duplicate entry error
             if ($e->getCode() === '23000') {
-                return ApiResponse::error(
+                return ApiResponse::conflict(
                     __('messages.general.duplicate_entry'),
                     409
                 );
@@ -204,13 +204,13 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // Foreign key constraint
             if (str_contains($e->getMessage(), 'foreign key constraint')) {
-                return ApiResponse::error(
+                return ApiResponse::conflict(
                     __('messages.general.relation_constraint'),
                     409
                 );
             }
 
-            return ApiResponse::error(
+            return ApiResponse::serverError(
                 __('messages.general.server_error'),
                 500
             );
@@ -253,7 +253,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'line' => $e->getLine(),
             ]);
 
-            return ApiResponse::error(
+            return ApiResponse::serverError(
                 __('messages.general.server_error'),
                 500
             );

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('slug_id')->unique();
             $table->string('name_en');
             $table->string('slug_en')->unique();
-            $table->enum('type', ['article', 'project'])->default('article');
             $table->timestamps();
         });
     }

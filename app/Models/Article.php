@@ -118,4 +118,15 @@ class Article extends Model
         return $query->whereNotNull("title_{$locale}")
             ->whereNotNull("content_{$locale}");
     }
+
+    /**
+     * Override slug mappings
+     */
+    protected function getSlugMappings(): array
+    {
+        return [
+            'title_id' => 'slug_id',
+            'title_en' => 'slug_en',
+        ];
+    }
 }

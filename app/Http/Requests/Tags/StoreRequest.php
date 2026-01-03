@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Tags;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -23,18 +22,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_id' => [
-                'required',
-                'string',
-                'max:255',
-                'unique'
-            ],
-            'name_en' => [
-                'required',
-                'string',
-                'max:255',
-                'unique'
-            ],
+            'name_id' => 'required|string|max:255|unique:tags,name_id',
+            'name_en' => 'required|string|max:255|unique:tags,name_en',
         ];
     }
 

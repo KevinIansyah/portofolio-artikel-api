@@ -9,11 +9,6 @@ class ApiResponse
 {
   /**
    * Return a success JSON response
-   *
-   * @param mixed $data
-   * @param string $message
-   * @param int $statusCode
-   * @return JsonResponse
    */
   public static function success($data = null, string $message = 'Berhasil', int $statusCode = 200): JsonResponse
   {
@@ -25,11 +20,24 @@ class ApiResponse
   }
 
   /**
+   * Return an error JSON response
+   */
+  public static function error(string $message = 'Terjadi kesalahan', int $statusCode = 500, $errors = null): JsonResponse
+  {
+    $response = [
+      'success' => false,
+      'message' => $message,
+    ];
+
+    if ($errors !== null) {
+      $response['errors'] = $errors;
+    }
+
+    return response()->json($response, $statusCode);
+  }
+
+  /**
    * Return a paginated JSON response
-   *
-   * @param LengthAwarePaginator $paginator
-   * @param string $message
-   * @return JsonResponse
    */
   public static function paginated(LengthAwarePaginator $paginator, string $message = 'Berhasil'): JsonResponse
   {
@@ -56,10 +64,6 @@ class ApiResponse
 
   /**
    * Return a created JSON response (201)
-   *
-   * @param mixed $data
-   * @param string $message
-   * @return JsonResponse
    */
   public static function created($data = null, string $message = 'Data berhasil dibuat'): JsonResponse
   {
@@ -67,33 +71,31 @@ class ApiResponse
   }
 
   /**
-   * Return an error JSON response
-   *
-   * @param string $message
-   * @param int $statusCode
-   * @param mixed $errors
-   * @return JsonResponse
+   * Return an updated JSON response (200)
    */
-  public static function error(string $message = 'Terjadi kesalahan', int $statusCode = 500, $errors = null): JsonResponse
+  public static function updated($data = null, string $message = 'Data berhasil diperbarui'): JsonResponse
   {
-    $response = [
-      'success' => false,
-      'message' => $message,
-    ];
+    return self::success($data, $message, 200);
+  }
 
-    if ($errors !== null) {
-      $response['errors'] = $errors;
-    }
+  /**
+   * Return a deleted JSON response (200)
+   */
+  public static function deleted(string $message = 'Data berhasil dihapus'): JsonResponse
+  {
+    return self::success(null, $message, 200);
+  }
 
-    return response()->json($response, $statusCode);
+  /**
+   * Return a no content response (204)
+   */
+  public static function noContent(string $message = 'Tidak ada konten'): JsonResponse
+  {
+    return self::success(null, $message, 204);
   }
 
   /**
    * Return a validation error JSON response (422)
-   *
-   * @param mixed $errors
-   * @param string $message
-   * @return JsonResponse
    */
   public static function validationError($errors, string $message = 'Validasi gagal'): JsonResponse
   {
@@ -104,11 +106,16 @@ class ApiResponse
     ], 422);
   }
 
+  /** 
+   * Return a rate limited JSON response (429)
+   */
+  public static function rateLimited(string $message = 'Terlalu banyak permintaan'): JsonResponse
+  {
+    return self::error($message, 429);
+  }
+
   /**
    * Return an unauthorized JSON response (401)
-   *
-   * @param string $message
-   * @return JsonResponse
    */
   public static function unauthorized(string $message = 'Anda belum terautentikasi'): JsonResponse
   {
@@ -117,9 +124,6 @@ class ApiResponse
 
   /**
    * Return a forbidden JSON response (403)
-   *
-   * @param string $message
-   * @return JsonResponse
    */
   public static function forbidden(string $message = 'Akses ditolak'): JsonResponse
   {
@@ -128,9 +132,6 @@ class ApiResponse
 
   /**
    * Return a not found JSON response (404)
-   *
-   * @param string $message
-   * @return JsonResponse
    */
   public static function notFound(string $message = 'Data tidak ditemukan'): JsonResponse
   {
@@ -138,12 +139,26 @@ class ApiResponse
   }
 
   /**
-   * Return a no content response (204)
-   *
-   * @return JsonResponse
+   * Return a method not allowed JSON response (405)
    */
-  public static function noContent(): JsonResponse
+  public static function methodNotAllowed(string $message = 'Method tidak diizinkan'): JsonResponse
   {
-    return response()->json(null, 204);
+    return self::error($message, 405);
+  }
+
+  /**
+   * Return a conflict error JSON response (409)
+   */
+  public static function conflict(string $message = 'Data sudah ada'): JsonResponse
+  {
+    return self::error($message, 409);
+  }
+
+  /**
+   * Return a server error JSON response (500)
+   */
+  public static function serverError(string $message = 'Terjadi kesalahan pada server'): JsonResponse
+  {
+    return self::error($message, 500);
   }
 }

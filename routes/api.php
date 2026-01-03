@@ -27,29 +27,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/articles', [ArticleController::class, 'store']);
         Route::put('/articles/{article}', [ArticleController::class, 'update']);
         Route::delete('/articles/{article}', [ArticleController::class, 'destroy']);
-        Route::get('/articles/{article}/translations', [ArticleController::class, 'translations']);
+        Route::get('/articles/{article}/edit', [ArticleController::class, 'edit']);
     });
 
     Route::middleware('role:admin')->group(function () {
         Route::post('/projects', [ProjectController::class, 'store']);
         Route::put('/projects/{project}', [ProjectController::class, 'update']);
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-        Route::get('/projects/{project}/translations', [ProjectController::class, 'translations']);
+        Route::get('/projects/{project}/edit', [ProjectController::class, 'edit']);
 
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::put('/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
-        Route::get('/categories/{category}/translations', [CategoryController::class, 'translations']);
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit']);
 
         Route::post('/tags', [TagController::class, 'store']);
         Route::put('/tags/{tag}', [TagController::class, 'update']);
         Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
-        Route::get('/tags/{tag}/translations', [TagController::class, 'translations']);
+        Route::get('/tags/{tag}/edit', [TagController::class, 'edit']);
 
-        Route::post('/skills', [TagController::class, 'store']);
-        Route::put('/skills/{skill}', [TagController::class, 'update']);
-        Route::delete('/skills/{skill}', [TagController::class, 'destroy']);
-        Route::get('/skills/{skill}/translations', [TagController::class, 'translations']);
+        Route::post('/skills', [SkillController::class, 'store']);
+        Route::put('/skills/{skill}', [SkillController::class, 'update']);
+        Route::delete('/skills/{skill}', [SkillController::class, 'destroy']);
+        Route::get('/skills/{skill}/edit', [SkillController::class, 'edit']);
     });
 });
 

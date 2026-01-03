@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Categories\StoreRequest;
 use App\Http\Requests\Categories\UpdateRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
@@ -45,64 +44,20 @@ class CategoryController extends Controller
         try {
             $category = Category::create($request->validated());
 
-            return ApiResponse::success($category, __('messages.categories.store_success'), 201);
+            return ApiResponse::created($category, __('messages.categories.store_success'), 201);
         } catch (\Exception $e) {
             Log::error('Failed to create category: ' . $e->getMessage(), [
                 'name' => $request->name,
                 'type' => $request->type,
             ]);
 
-            return ApiResponse::error(__('messages.categories.store_failed'), 500);
+            return ApiResponse::serverError(__('messages.categories.store_failed'), 500);
         }
     }
 
-    public function update(UpdateRequest $request, Category $category)
+    public function edit(Category $category)
     {
-        try {
-            $category->update($request->validated());
-
-            return ApiResponse::success($category, __('messages.categories.update_success'));
-        } catch (\Exception $e) {
-            Log::error('Failed to update category: ' . $e->getMessage(), [
-                'id' => $category->id,
-                'name' => $request->name,
-                'type' => $request->type,
-            ]);
-
-            return ApiResponse::error(__('messages.categories.update_failed'), 500);
-        }
-    }
-
-    public function destroy(Category $category)
-    {
-        try {
-            $projectsCount = $category->projects()->count();
-            $articlesCount = $category->articles()->count();
-
-            if ($projectsCount > 0 || $articlesCount > 0) {
-                return ApiResponse::error(
-                    __('messages.general.relation_constraint'),
-                    400
-                );
-            }
-
-            $category->delete();
-
-            return ApiResponse::success(null, __('messages.categories.delete_success'));
-        } catch (\Exception $e) {
-            Log::error('Failed to delete category: ' . $e->getMessage(), [
-                'id' => $category->id,
-                'name' => $category->name,
-                'type' => $category->type,
-            ]);
-
-            return ApiResponse::error(__('messages.categories.delete_failed'), 500);
-        }
-    }
-
-    public function translations(Category $category)
-    {
-        return ApiResponse::success([
+        $category = [
             'id' => $category->id,
             'type' => $category->type,
             'translations' => [
@@ -115,6 +70,52 @@ class CategoryController extends Controller
             ],
             'created_at' => $category->created_at,
             'updated_at' => $category->updated_at,
-        ], __('messages.categories.translations_success'));
+        ];
+
+        return ApiResponse::success($category, __('messages.categories.translations_success'));
+    }
+
+    public function update(UpdateRequest $request, Category $category)
+    {
+        try {
+            $category->update($request->validated());
+
+            return ApiResponse::updated($category, __('messages.categories.update_success'));
+        } catch (\Exception $e) {
+            Log::error('Failed to update category: ' . $e->getMessage(), [
+                'id' => $category->id,
+                'name' => $request->name,
+                'type' => $request->type,
+            ]);
+
+            return ApiResponse::serverError(__('messages.categories.update_failed'), 500);
+        }
+    }
+
+    public function destroy(Category $category)
+    {
+        try {
+            $projectsCount = $category->projects()->count();
+            $articlesCount = $category->articles()->count();
+
+            if ($projectsCount > 0 || $articlesCount > 0) {
+                return ApiResponse::conflict(
+                    __('messages.general.relation_constraint'),
+                    400
+                );
+            }
+
+            $category->delete();
+
+            return ApiResponse::deleted(__('messages.categories.delete_success'));
+        } catch (\Exception $e) {
+            Log::error('Failed to delete category: ' . $e->getMessage(), [
+                'id' => $category->id,
+                'name' => $category->name,
+                'type' => $category->type,
+            ]);
+
+            return ApiResponse::serverError(__('messages.categories.delete_failed'), 500);
+        }
     }
 }

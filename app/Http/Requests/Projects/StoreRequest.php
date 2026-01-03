@@ -23,12 +23,10 @@ class StoreRequest extends FormRequest
     {
         return [
             'title_id' => 'required|string|max:255',
-            'slug_id' => 'nullable|string|max:255|unique:articles,slug_id',
             'description_id' => 'required|string',
             'content_id' => 'required|string',
 
             'title_en' => 'required|string|max:255',
-            'slug_en' => 'nullable|string|max:255|unique:articles,slug_en',
             'description_en' => 'required|string',
             'content_en' => 'required|string',
 
@@ -69,8 +67,6 @@ class StoreRequest extends FormRequest
             'title_id.string' => 'Judul proyek (ID) harus berupa teks.',
             'title_id.max' => 'Judul proyek (ID) maksimal 255 karakter.',
 
-            'slug_id.unique' => 'Slug (ID) sudah digunakan.',
-
             'description_id.required' => 'Deskripsi proyek (ID) wajib diisi.',
             'description_id.string' => 'Deskripsi proyek (ID) harus berupa teks.',
 
@@ -81,8 +77,6 @@ class StoreRequest extends FormRequest
             'title_en.required' => 'Judul proyek (EN) wajib diisi.',
             'title_en.string' => 'Judul proyek (EN) harus berupa teks.',
             'title_en.max' => 'Judul proyek (EN) maksimal 255 karakter.',
-
-            'slug_en.unique' => 'Slug (EN) sudah digunakan.',
 
             'description_en.required' => 'Deskripsi proyek (EN) wajib diisi.',
             'description_en.string' => 'Deskripsi proyek (EN) harus berupa teks.',

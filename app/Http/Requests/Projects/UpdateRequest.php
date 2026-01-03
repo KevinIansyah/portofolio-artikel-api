@@ -83,8 +83,6 @@ class UpdateRequest extends FormRequest
             'title_id.string' => 'Judul proyek (ID) harus berupa teks.',
             'title_id.max' => 'Judul proyek (ID) maksimal 255 karakter.',
 
-            'slug_id.unique' => 'Slug (ID) sudah digunakan.',
-
             'description_id.required' => 'Deskripsi proyek (ID) wajib diisi.',
             'description_id.string' => 'Deskripsi proyek (ID) harus berupa teks.',
 
@@ -95,8 +93,6 @@ class UpdateRequest extends FormRequest
             'title_en.required' => 'Judul proyek (EN) wajib diisi.',
             'title_en.string' => 'Judul proyek (EN) harus berupa teks.',
             'title_en.max' => 'Judul proyek (EN) maksimal 255 karakter.',
-
-            'slug_en.unique' => 'Slug (EN) sudah digunakan.',
 
             'description_en.required' => 'Deskripsi proyek (EN) wajib diisi.',
             'description_en.string' => 'Deskripsi proyek (EN) harus berupa teks.',
@@ -133,8 +129,6 @@ class UpdateRequest extends FormRequest
             'title_id.string' => 'Project title (ID) must be a string.',
             'title_id.max' => 'Project title (ID) maximum 255 characters.',
 
-            'slug_id.unique' => 'Slug (ID) already taken.',
-
             'description_id.required' => 'Project description (ID) is required.',
             'description_id.string' => 'Project description (ID) must be a string.',
 
@@ -145,8 +139,6 @@ class UpdateRequest extends FormRequest
             'title_en.required' => 'Project title (EN) is required.',
             'title_en.string' => 'Project title (EN) must be a string.',
             'title_en.max' => 'Project title (EN) maximum 255 characters.',
-
-            'slug_en.unique' => 'Slug (EN) already taken.',
 
             'description_en.required' => 'Project description (EN) is required.',
             'description_en.string' => 'Project description (EN) must be a string.',

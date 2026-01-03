@@ -21,13 +21,13 @@ class StoreRequest extends FormRequest
     {
         return [
             'title_id' => 'required|string|max:255',
-            'slug_id' => 'nullable|string|max:255|unique:articles,slug_id',
             'description_id' => 'required|string',
             'content_id' => 'required|string',
+
             'title_en' => 'required|string|max:255',
-            'slug_en' => 'nullable|string|max:255|unique:articles,slug_en',
             'description_en' => 'required|string',
             'content_en' => 'required|string',
+
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'required|in:draft,published',
             'published_at' => 'nullable|date',
@@ -61,8 +61,6 @@ class StoreRequest extends FormRequest
             'title_id.string' => 'Judul artikel (ID) harus berupa teks.',
             'title_id.max' => 'Judul artikel (ID) maksimal 255 karakter.',
 
-            'slug_id.unique' => 'Slug (ID) sudah digunakan.',
-
             'description_id.required' => 'Deskripsi artikel (ID) wajib diisi.',
             'description_id.string' => 'Deskripsi artikel (ID) harus berupa teks.',
 
@@ -73,8 +71,6 @@ class StoreRequest extends FormRequest
             'title_en.required' => 'Judul artikel (EN) wajib diisi.',
             'title_en.string' => 'Judul artikel (EN) harus berupa teks.',
             'title_en.max' => 'Judul artikel (EN) maksimal 255 karakter.',
-
-            'slug_en.unique' => 'Slug (EN) sudah digunakan.',
 
             'description_en.required' => 'Deskripsi artikel (EN) wajib diisi.',
             'description_en.string' => 'Deskripsi artikel (EN) harus berupa teks.',
@@ -111,8 +107,6 @@ class StoreRequest extends FormRequest
             'title_id.string' => 'Article title (ID) must be a string.',
             'title_id.max' => 'Article title (ID) maximum 255 characters.',
 
-            'slug_id.unique' => 'Slug (ID) already taken.',
-
             'description_id.required' => 'Article description (ID) is required.',
             'description_id.string' => 'Article description (ID) must be a string.',
 
@@ -123,8 +117,6 @@ class StoreRequest extends FormRequest
             'title_en.required' => 'Article title (EN) is required.',
             'title_en.string' => 'Article title (EN) must be a string.',
             'title_en.max' => 'Article title (EN) maximum 255 characters.',
-
-            'slug_en.unique' => 'Slug (EN) already taken.',
 
             'description_en.required' => 'Article description (EN) is required.',
             'description_en.string' => 'Article description (EN) must be a string.',

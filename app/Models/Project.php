@@ -98,9 +98,9 @@ class Project extends Model
         return $this->belongsToMany(Category::class, 'category_project');
     }
 
-    public function tags()
+    public function skills()
     {
-        return $this->belongsToMany(Tag::class, 'tag_project');
+        return $this->belongsToMany(Skill::class, 'skill_project');
     }
 
     /**
@@ -116,5 +116,16 @@ class Project extends Model
         $locale = $locale ?? app()->getLocale();
         return $query->whereNotNull("title_{$locale}")
             ->whereNotNull("content_{$locale}");
+    }
+
+    /**
+     * Override slug mappings
+     */
+    protected function getSlugMappings(): array
+    {
+        return [
+            'title_id' => 'slug_id',
+            'title_en' => 'slug_en',
+        ];
     }
 }

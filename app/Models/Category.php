@@ -88,4 +88,15 @@ class Category extends Model
 
         return $query->whereNotNull("name_{$locale}");
     }
+
+    /**
+     * Override slug mappings
+     */
+    protected function getSlugMappings(): array
+    {
+        return [
+            'name_id' => 'slug_id',
+            'name_en' => 'slug_en',
+        ];
+    }
 }
