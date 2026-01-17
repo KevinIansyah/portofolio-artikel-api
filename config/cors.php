@@ -38,6 +38,8 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
+        'https://keviniansyah.site',
+        'https://www.keviniansyah.site'
     ],
 
     'allowed_origins_patterns' => [],
