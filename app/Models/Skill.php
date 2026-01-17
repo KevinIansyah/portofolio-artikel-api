@@ -13,7 +13,7 @@ class Skill extends Model
     protected $fillable = [
         'name',
         'slug',
-        'dark_icon_ url',
+        'dark_icon_url',
         'light_icon_url',
     ];
 

@@ -7,10 +7,53 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Categories\StoreRequest;
 use App\Http\Requests\Categories\UpdateRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
+    public function index(Request $request)
+    {
+        $locale = app()->getLocale();
+        $name = 'name_' . $locale;
+        $slug = 'slug_' . $locale;
+
+        $categories = Category::select('id', $name, $slug, 'type')
+            ->orderBy('name')
+            ->get();
+
+        return ApiResponse::success($categories, __('messages.categories.list_success'));
+    }
+
+    public function indexPaginated(Request $request)
+    {
+        $locale = app()->getLocale();
+        $name = 'name_' . $locale;
+        $slug = 'slug_' . $locale;
+
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $type = $request->get('type');
+        $search = $request->get('search');
+
+        $query = Category::select('id', $name, $slug, 'type')->byLocale($locale);
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search . '%');
+            });
+        }
+
+        $category = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', $perPage));
+
+        return ApiResponse::paginated($category, __('messages.categories.list_success'));
+    }
+
     public function projectCategories()
     {
         $locale = app()->getLocale();

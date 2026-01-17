@@ -24,8 +24,12 @@ class ArticleController extends Controller
         $categorySlug = 'slug_' . $locale;
         $tagSlug = 'slug_' . $locale;
 
-        $query = Article::where('status', 'published')
-            ->byLocale($locale)
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search = $request->get('search');
+
+        $query = Article::byLocale($locale)
             ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
         if ($request->has('category')) {
@@ -40,8 +44,15 @@ class ArticleController extends Controller
             });
         }
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title_id', 'like', $search . '%')
+                    ->orWhere('title_en', 'like', $search . '%');
+            });
+        }
+
         $articles = $query->latest('published_at')
-            ->paginate($request->get('per_page', 12));
+            ->paginate($request->get('per_page', $perPage));
 
         return ApiResponse::paginated($articles, __('messages.articles.list_success'));
     }

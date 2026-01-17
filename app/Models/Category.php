@@ -27,7 +27,6 @@ class Category extends Model
         'name_en',
         'slug_id',
         'slug_en',
-        'type',
         'created_at',
         'updated_at',
         'pivot',

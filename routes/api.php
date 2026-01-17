@@ -36,15 +36,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
         Route::get('/projects/{project}/edit', [ProjectController::class, 'edit']);
 
+
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::put('/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit']);
 
+
         Route::post('/tags', [TagController::class, 'store']);
         Route::put('/tags/{tag}', [TagController::class, 'update']);
         Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
         Route::get('/tags/{tag}/edit', [TagController::class, 'edit']);
+
 
         Route::post('/skills', [SkillController::class, 'store']);
         Route::put('/skills/{skill}', [SkillController::class, 'update']);
@@ -59,9 +62,13 @@ Route::get('/projects/{slug}', [ProjectController::class, 'show']);
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{slug}', [ArticleController::class, 'show']);
 
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/paginated', [CategoryController::class, 'indexPaginated']);
 Route::get('/categories/projects', [CategoryController::class, 'projectCategories']);
 Route::get('/categories/articles', [CategoryController::class, 'articleCategories']);
 
 Route::get('/tags', [TagController::class, 'index']);
+Route::get('/tags/paginated', [TagController::class, 'indexPaginated']);
 
 Route::get('/skills', [SkillController::class, 'index']);
+Route::get('/skills/paginated', [SkillController::class, 'indexPaginated']);

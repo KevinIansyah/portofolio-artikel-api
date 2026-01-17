@@ -23,9 +23,13 @@ class ProjectController extends Controller
         $locale = app()->getLocale();
         $categorySlug = 'slug_' . $locale;
 
-        $query = Project::where('status', 'published')
-            ->byLocale($locale)
-            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search = $request->get('search');
+
+        $query = Project::byLocale($locale)
+            ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'skills:id,name,slug', 'user:id,name']);
 
         if ($request->has('category')) {
             $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
@@ -39,16 +43,15 @@ class ProjectController extends Controller
             });
         }
 
-        // if ($request->has('search')) {
-        //     $search = $request->search;
-        //     $query->where(function ($q) use ($search) {
-        //         $q->where('title', 'like', "%{$search}%")
-        //             ->orWhere('description', 'like', "%{$search}%");
-        //     });
-        // }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title_id', 'like', $search . '%')
+                    ->orWhere('title_en', 'like', $search . '%');
+            });
+        }
 
         $projects = $query->latest('published_at')
-            ->paginate($request->get('per_page', 12));
+            ->paginate($request->get('per_page', $perPage));
 
         return ApiResponse::paginated($projects, __('messages.projects.list_success'));
     }

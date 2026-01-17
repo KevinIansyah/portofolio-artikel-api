@@ -20,9 +20,8 @@ class AuthController extends Controller
             return ApiResponse::error(__('messages.auth.invalid_credentials'), 401);
         }
 
-        $user->tokens()->delete();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $deviceName = $request->device_name ?? $request->userAgent() ?? 'web';
+        $token = $user->createToken($deviceName)->plainTextToken;
 
         $data = [
             'user' => $user,

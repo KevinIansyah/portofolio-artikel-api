@@ -19,13 +19,32 @@ class SkillController extends Controller
 
     public function index()
     {
-        $skills = Skill::select('id', 'name', 'slug')
+        $skills = Skill::select('id', 'name', 'slug', 'dark_icon_url', 'light_icon_url')
             ->orderBy('name')
             ->get();
 
         return ApiResponse::success($skills, __('messages.skills.list_success'));
     }
 
+    public function indexPaginated(Request $request)
+    {
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search = $request->get('search');
+
+        $query = Skill::select('id', 'name', 'slug', 'dark_icon_url', 'light_icon_url');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search . '%');
+            });
+        }
+
+        $skills = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', $perPage));
+
+        return ApiResponse::paginated($skills, __('messages.skills.list_success'));
+    }
 
     public function store(StoreRequest $request)
     {
@@ -35,13 +54,13 @@ class SkillController extends Controller
             if ($request->hasFile('dark_icon') && $request->hasFile('light_icon')) {
                 $data['dark_icon_url'] = $this->imageService->upload(
                     file: $request->file('dark_icon'),
-                    name: $data['title'],
+                    name: $data['name'],
                     folder: 'icons/dark'
                 );
 
                 $data['light_icon_url'] = $this->imageService->upload(
                     file: $request->file('light_icon'),
-                    name: $data['title'],
+                    name: $data['name'],
                     folder: 'icons/light'
                 );
             }
@@ -56,6 +75,20 @@ class SkillController extends Controller
 
             return ApiResponse::error(__('messages.skills.store_failed'), 500);
         }
+    }
+
+    public function edit(Skill $skill)
+    {
+        $skill = [
+            'id' => $skill->id,
+            'name' => $skill->name,
+            'dark_icon_url' => $skill->dark_icon_url,
+            'light_icon_url' => $skill->light_icon_url,
+            'created_at' => $skill->created_at,
+            'updated_at' => $skill->updated_at,
+        ];
+
+        return ApiResponse::success($skill, __('messages.skills.translations_success'));
     }
 
     public function update(UpdateRequest $request, Skill $skill)
@@ -125,15 +158,5 @@ class SkillController extends Controller
 
             return ApiResponse::error(__('messages.skills.delete_failed'), 500);
         }
-    }
-
-    public function translations(Skill $skill)
-    {
-        return ApiResponse::success([
-            'id' => $skill->id,
-            'name' => $skill->name,
-            'created_at' => $skill->created_at,
-            'updated_at' => $skill->updated_at,
-        ], __('messages.skills.translations_success'));
     }
 }

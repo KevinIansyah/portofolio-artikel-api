@@ -63,17 +63,17 @@ return [
 
   // Skills
   'skills' => [
-    'list_success' => 'Daftar skill berhasil diambil',
-    'detail_success' => 'Detail skill berhasil diambil',
-    'store_success' => 'Skill berhasil disimpan',
-    'edit_success' => 'Detail skill untuk edit berhasil diambil',
-    'update_success' => 'Skill berhasil diperbarui',
-    'delete_success' => 'Skill berhasil dihapus',
-    'store_failed' => 'Gagal menyimpan skill',
-    'update_failed' => 'Gagal memperbarui skill',
-    'delete_failed' => 'Gagal menghapus skill',
-    'translations_success' => 'Semua terjemahan skill berhasil diambil',
-    'not_found' => 'Skill tidak ditemukan',
+    'list_success' => 'Daftar keterampilan berhasil diambil',
+    'detail_success' => 'Detail keterampilan berhasil diambil',
+    'store_success' => 'Keterampilan berhasil disimpan',
+    'edit_success' => 'Detail keterampilan untuk edit berhasil diambil',
+    'update_success' => 'Keterampilan berhasil diperbarui',
+    'delete_success' => 'Keterampilan berhasil dihapus',
+    'store_failed' => 'Gagal menyimpan keterampilan',
+    'update_failed' => 'Gagal memperbarui keterampilan',
+    'delete_failed' => 'Gagal menghapus keterampilan',
+    'translations_success' => 'Semua terjemahan keterampilan berhasil diambil',
+    'not_found' => 'Keterampilan tidak ditemukan',
   ],
 
   // Auth

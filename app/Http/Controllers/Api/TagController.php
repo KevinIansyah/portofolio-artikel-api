@@ -25,6 +25,31 @@ class TagController extends Controller
         return ApiResponse::success($tags, __('messages.tags.list_success'));
     }
 
+    public function indexPaginated(Request $request)
+    {
+        $locale = app()->getLocale();
+        $name = 'name_' . $locale;
+        $slug = 'slug_' . $locale;
+
+        $perPage = $request->get('per_page', 20);
+        $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+        $search = $request->get('search');
+
+        $query = Tag::select('id', $name, $slug);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name_id', 'like', $search . '%')
+                    ->orWhere('name_en', 'like', $search . '%');
+            });
+        }
+
+        $skills = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', $perPage));
+
+        return ApiResponse::paginated($skills, __('messages.skills.list_success'));
+    }
+
     public function edit(Tag $tag)
     {
         $tag = [
