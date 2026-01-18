@@ -121,6 +121,8 @@ class ProjectController extends Controller
             'id' => $project->id,
             'user_id' => $project->user_id,
             'thumbnail_url' => $project->thumbnail_url,
+            'demo_url' => $project->demo_url,
+            'project_url' => $project->project_url,
             'status' => $project->status,
             'published_at' => $project->published_at,
             'translations' => [

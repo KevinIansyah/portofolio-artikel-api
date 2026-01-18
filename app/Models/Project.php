@@ -28,7 +28,7 @@ class Project extends Model
     ];
 
     protected $casts = [
-        'published_at' => 'date',
+        'published_at' => 'datetime',
     ];
 
     protected $appends = [
