@@ -162,8 +162,12 @@ class ProjectController extends Controller
                 );
             }
 
-            if ($data['status'] === 'published' && $project->published_at === null) {
+            if ($data['status'] === 'published' && $project->status === 'draft') {
                 $data['published_at'] = now();
+            }
+
+            if ($data['status'] === 'draft' && $project->status === 'published') {
+                $data['published_at'] = null;
             }
 
             $project->update($data);

@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('slug_en')->unique();
             $table->text('description_en');
             $table->text('content_en');
-            $table->string('thumbnail_url')->nullable();
+            $table->timestamp('thumbnail_url')->nullable();
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->integer('views')->default(0);
             $table->integer('reading_time')->nullable();
-            $table->date('published_at')->nullable();
+            $table->datetime('published_at')->nullable();
             $table->timestamps();
         });
     }

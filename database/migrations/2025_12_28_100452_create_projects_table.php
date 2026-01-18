@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('demo_url')->nullable();
             $table->string('project_url')->nullable();
             $table->enum('status', ['draft', 'published'])->default('draft');
-            $table->date('published_at')->nullable();
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }

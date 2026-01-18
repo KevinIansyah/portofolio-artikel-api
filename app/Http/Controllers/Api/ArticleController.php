@@ -166,8 +166,12 @@ class ArticleController extends Controller
                 );
             }
 
-            if ($data['status'] === 'published' && $article->published_at === null) {
+            if ($data['status'] === 'published' && $article->status === 'draft') {
                 $data['published_at'] = now();
+            }
+
+            if ($data['status'] === 'draft' && $article->status === 'published') {
+                $data['published_at'] = null;
             }
 
             $article->update($data);
