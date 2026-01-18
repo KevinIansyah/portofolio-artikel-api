@@ -31,6 +31,9 @@ class StoreRequest extends FormRequest
             'content_en' => 'required|string',
 
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'demo_url' => 'nullable|url|max:255',
+            'project_url' => 'nullable|url|max:255',
+
             'status' => 'required|in:draft,published',
             'published_at' => 'nullable|date',
             'categories' => 'required|array|min:1',
@@ -94,11 +97,23 @@ class StoreRequest extends FormRequest
 
             'published_at.date' => 'Tanggal publish tidak valid.',
 
+            'project_url.url' => 'Format URL project tidak valid.',
+            'project_url.max' => 'URL project maksimal 255 karakter.',
+
+            'status.required' => 'Status proyek wajib diisi.',
+            'status.in' => 'Status proyek harus berupa draft atau published.',
+
             'categories.required' => 'Kategori wajib dipilih minimal 1.',
             'categories.array' => 'Format kategori tidak valid.',
             'categories.min' => 'Pilih minimal 1 kategori.',
             'categories.*.required' => 'Kategori tidak valid.',
             'categories.*.exists' => 'Kategori tidak ditemukan.',
+
+            'skills.required' => 'Skill wajib dipilih minimal 1.',
+            'skills.array' => 'Format skill tidak valid.',
+            'skills.min' => 'Pilih minimal 1 skill.',
+            'skills.*.required' => 'Skill tidak valid.',
+            'skills.*.exists' => 'Skill tidak ditemukan.',
         ];
     }
 
@@ -144,11 +159,23 @@ class StoreRequest extends FormRequest
 
             'published_at.date' => 'Publish date is invalid.',
 
+            'demo_url.url' => 'Demo URL format is invalid.',
+            'demo_url.max' => 'Demo URL maximum 255 characters.',
+
+            'project_url.url' => 'Project URL format is invalid.',
+            'project_url.max' => 'Project URL maximum 255 characters.',
+
             'categories.required' => 'At least 1 category is required.',
             'categories.array' => 'Invalid category format.',
             'categories.min' => 'Select at least 1 category.',
             'categories.*.required' => 'Category is invalid.',
             'categories.*.exists' => 'Category not found.',
+
+            'skills.required' => 'At least 1 skill is required.',
+            'skills.array' => 'Invalid skill format.',
+            'skills.min' => 'Select at least 1 skill.',
+            'skills.*.required' => 'skill is invalid.',
+            'skills.*.exists' => 'Skill not found.',
         ];
     }
 }

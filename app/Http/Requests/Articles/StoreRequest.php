@@ -33,6 +33,8 @@ class StoreRequest extends FormRequest
             'published_at' => 'nullable|date',
             'categories' => 'required|array|min:1',
             'categories.*' => 'required|exists:categories,id',
+            'tags' => 'required|array|min:1',
+            'tags.*' => 'required|exists:tags,id',
         ];
     }
 
@@ -93,6 +95,12 @@ class StoreRequest extends FormRequest
             'categories.min' => 'Pilih minimal 1 kategori.',
             'categories.*.required' => 'Kategori tidak valid.',
             'categories.*.exists' => 'Kategori tidak ditemukan.',
+
+            'tags.required' => 'Tag wajib dipilih minimal 1.',
+            'tags.array' => 'Format tag tidak valid.',
+            'tags.min' => 'Pilih minimal 1 tag.',
+            'tags.*.required' => 'Tag tidak valid.',
+            'tags.*.exists' => 'Tag tidak ditemukan.',
         ];
     }
 
@@ -139,6 +147,12 @@ class StoreRequest extends FormRequest
             'categories.min' => 'Select at least 1 category.',
             'categories.*.required' => 'Category is invalid.',
             'categories.*.exists' => 'Category not found.',
+
+            'tags.required' => 'At least 1 tag is required.',
+            'tags.array' => 'Invalid tag format.',
+            'tags.min' => 'Select at least 1 tag.',
+            'tags.*.required' => 'Tag is invalid.',
+            'tags.*.exists' => 'Tag not found.',
         ];
     }
 }
