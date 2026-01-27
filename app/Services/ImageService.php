@@ -19,7 +19,7 @@ class ImageService
     string $name,
     string $folder,
     int $width = 1200,
-    int $quality = 85
+    int $quality = 100
   ): string {
     $slug = Str::slug($name);
     $timestamp = time();
