@@ -26,7 +26,7 @@ class ImageService
     $filename = "{$timestamp}-{$slug}.webp";
 
     $path = "{$folder}/{$filename}";
-    $fullPath = storage_path('app/public/' . $path);
+    // $fullPath = storage_path('app/public/' . $path);
 
     $manager = new ImageManager(new Driver());
 
@@ -37,8 +37,8 @@ class ImageService
 
     Storage::disk('public')->put($path, (string) $image);
 
-    OptimizerChainFactory::create()
-      ->optimize($fullPath);
+    // OptimizerChainFactory::create()
+    //   ->optimize($fullPath);
 
     return Storage::url($path);
   }
@@ -69,7 +69,7 @@ class ImageService
     string $name,
     string $folder,
     int $width = 1200,
-    int $quality = 85
+    int $quality = 100
   ): string {
     if ($oldUrl) {
       $this->delete($oldUrl);
