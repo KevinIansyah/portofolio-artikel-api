@@ -33,7 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
         ]);
 
-        $middleware->throttleApi();
+        // $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $setLocale = function ($request) {
