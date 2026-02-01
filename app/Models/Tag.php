@@ -23,9 +23,7 @@ class Tag extends Model
 
     protected $hidden = [
         'name_id',
-        'slug_id',
         'name_en',
-        'slug_en',
         'created_at',
         'updated_at',
         'pivot'

@@ -45,8 +45,6 @@ class Project extends Model
         'description_en',
         'content_id',
         'content_en',
-        'slug_id',
-        'slug_en',
     ];
 
     /**

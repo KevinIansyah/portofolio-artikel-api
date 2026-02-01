@@ -21,7 +21,9 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $locale = app()->getLocale();
+        $fallbackLocale = $locale === 'id' ? 'en' : 'id';
         $categorySlug = 'slug_' . $locale;
+        $categorySlugFallback = 'slug_' . $fallbackLocale;
 
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
@@ -32,8 +34,9 @@ class ProjectController extends Controller
             ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'skills:id,name,slug', 'user:id,name']);
 
         if ($request->has('category')) {
-            $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
-                $q->where($categorySlug, $request->category);
+            $query->whereHas('categories', function ($q) use ($categorySlug, $categorySlugFallback, $request) {
+                $q->where($categorySlug, $request->category)
+                    ->orWhere($categorySlugFallback, $request->category);
             });
         }
 
@@ -56,12 +59,54 @@ class ProjectController extends Controller
         return ApiResponse::paginated($projects, __('messages.projects.list_success'));
     }
 
+    // public function index(Request $request)
+    // {
+    //     $locale = app()->getLocale();
+    //     $categorySlug = 'slug_' . $locale;
+
+    //     $perPage = $request->get('per_page', 20);
+    //     $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+    //     $search = $request->get('search');
+
+    //     $query = Project::byLocale($locale)
+    //         ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'skills:id,name,slug', 'user:id,name']);
+
+    //     if ($request->has('category')) {
+    //         $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
+    //             $q->where($categorySlug, $request->category);
+    //         });
+    //     }
+
+    //     if ($request->has('skill')) {
+    //         $query->whereHas('skills', function ($q) use ($request) {
+    //             $q->where('slug', $request->skill);
+    //         });
+    //     }
+
+    //     if ($search) {
+    //         $query->where(function ($q) use ($search) {
+    //             $q->where('title_id', 'like', $search . '%')
+    //                 ->orWhere('title_en', 'like', $search . '%');
+    //         });
+    //     }
+
+    //     $projects = $query->latest('published_at')
+    //         ->paginate($request->get('per_page', $perPage));
+
+    //     return ApiResponse::paginated($projects, __('messages.projects.list_success'));
+    // }
+
     public function show($slug)
     {
         $locale = app()->getLocale();
+        $fallbackLocale = $locale === 'id' ? 'en' : 'id';
 
-        $project = Project::where("slug_{$locale}", $slug)
-            ->where('status', 'published')
+        $project = Project::where('status', 'published')
+            ->where(function ($query) use ($slug, $locale, $fallbackLocale) {
+                $query->where("slug_{$locale}", $slug)
+                    ->orWhere("slug_{$fallbackLocale}", $slug);
+            })
             ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'skills:id,name,slug', 'user:id,name,email,avatar_url'])
             ->firstOrFail();
 

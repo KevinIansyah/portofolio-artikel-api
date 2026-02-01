@@ -21,8 +21,11 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $locale = app()->getLocale();
+        $fallbackLocale = $locale === 'id' ? 'en' : 'id';
         $categorySlug = 'slug_' . $locale;
+        $categorySlugFallback = 'slug_' . $fallbackLocale;
         $tagSlug = 'slug_' . $locale;
+        $tagSlugFallback = 'slug_' . $fallbackLocale;
 
         $perPage = $request->get('per_page', 20);
         $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
@@ -33,14 +36,16 @@ class ArticleController extends Controller
             ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
 
         if ($request->has('category')) {
-            $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
-                $q->where($categorySlug, $request->category);
+            $query->whereHas('categories', function ($q) use ($categorySlug, $categorySlugFallback, $request) {
+                $q->where($categorySlug, $request->category)
+                    ->orWhere($categorySlugFallback, $request->category);
             });
         }
 
         if ($request->has('tag')) {
-            $query->whereHas('tags', function ($q) use ($tagSlug, $request) {
-                $q->where($tagSlug, $request->tag);
+            $query->whereHas('tags', function ($q) use ($tagSlug, $tagSlugFallback, $request) {
+                $q->where($tagSlug, $request->tag)
+                    ->orWhere($tagSlugFallback, $request->tag);
             });
         }
 
@@ -57,12 +62,55 @@ class ArticleController extends Controller
         return ApiResponse::paginated($articles, __('messages.articles.list_success'));
     }
 
+    // public function index(Request $request)
+    // {
+    //     $locale = app()->getLocale();
+    //     $categorySlug = 'slug_' . $locale;
+    //     $tagSlug = 'slug_' . $locale;
+
+    //     $perPage = $request->get('per_page', 20);
+    //     $perPage = in_array($perPage, [20, 30, 40, 50]) ? $perPage : 20;
+
+    //     $search = $request->get('search');
+
+    //     $query = Article::byLocale($locale)
+    //         ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name']);
+
+    //     if ($request->has('category')) {
+    //         $query->whereHas('categories', function ($q) use ($categorySlug, $request) {
+    //             $q->where($categorySlug, $request->category);
+    //         });
+    //     }
+
+    //     if ($request->has('tag')) {
+    //         $query->whereHas('tags', function ($q) use ($tagSlug, $request) {
+    //             $q->where($tagSlug, $request->tag);
+    //         });
+    //     }
+
+    //     if ($search) {
+    //         $query->where(function ($q) use ($search) {
+    //             $q->where('title_id', 'like', $search . '%')
+    //                 ->orWhere('title_en', 'like', $search . '%');
+    //         });
+    //     }
+
+    //     $articles = $query->latest('published_at')
+    //         ->paginate($request->get('per_page', $perPage));
+
+    //     return ApiResponse::paginated($articles, __('messages.articles.list_success'));
+    // }
+
     public function show($slug)
     {
         $locale = app()->getLocale();
+        $fallbackLocale = $locale === 'id' ? 'en' : 'id';
 
-        $article = Article::where("slug_{$locale}", $slug)
-            ->where('status', 'published')
+        $article = Article::where('status', 'published')
+            ->where(function ($query) use ($slug, $locale, $fallbackLocale) {
+                $query->where("slug_{$locale}", $slug)
+                    ->orWhere("slug_{$fallbackLocale}", $slug);
+            })
             ->with(['categories:id,name_id,name_en,slug_id,slug_en', 'tags:id,name_id,name_en,slug_id,slug_en', 'user:id,name,email,avatar_url'])
             ->firstOrFail();
 
