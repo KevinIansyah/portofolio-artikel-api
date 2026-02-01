@@ -31,6 +31,7 @@ class StoreRequest extends FormRequest
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'required|in:draft,published',
             'published_at' => 'nullable|date',
+            'reading_time' => 'required|integer',
             'categories' => 'required|array|min:1',
             'categories.*' => 'required|exists:categories,id',
             'tags' => 'required|array|min:1',
@@ -90,6 +91,9 @@ class StoreRequest extends FormRequest
 
             'published_at.date' => 'Tanggal publish tidak valid.',
 
+            'reading_time.required' => 'Waktu baca wajib diisi.',
+            'reading_time.integer' => 'Waktu baca harus berupa angka.',
+
             'categories.required' => 'Kategori wajib dipilih minimal 1.',
             'categories.array' => 'Format kategori tidak valid.',
             'categories.min' => 'Pilih minimal 1 kategori.',
@@ -141,6 +145,9 @@ class StoreRequest extends FormRequest
             'status.in' => 'Article status must be draft or published.',
 
             'published_at.date' => 'Publish date is invalid.',
+
+            'reading_time.required' => 'Reading time is required.',
+            'reading_time.integer' => 'Reading time must be an integer.',
 
             'categories.required' => 'At least 1 category is required.',
             'categories.array' => 'Invalid category format.',
